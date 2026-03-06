@@ -3,10 +3,11 @@ import { createLogin } from '../controllers/CreateLogin.js';
 
 const router = Router();
 
-router.post('/login', createLogin);
+router.post('/', createLogin);
 
-router.get('/login', (req, res) => {
-  return res.status(200).json({ message: 'HELLO LOGIN' });
+router.get('/:id', (req, res) => {
+  console.log(req.params.id);
+  return res.status(200).json({ message: `HELLO LOGIN FOR ${req.params.id}` });
 });
 
 export default router;

@@ -6,6 +6,8 @@ import registerRoute from './routes/register.routes.js';
 const app = express();
 const PORT = process.env.PORT;
 
+app.use(express.json());
+
 // login route
 app.use('/login', loginRoute);
 
