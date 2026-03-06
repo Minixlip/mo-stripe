@@ -1,26 +1,25 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import bcrypt from 'bcrypt';
+import { prisma } from './client.js';
 
-const connectionString = process.env.DIRECT_URL;
-
-if (!connectionString) {
-  throw new Error('DIRECT_URL is missing in .env');
-}
-
-export const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+const users = [
+  { email: 'Mohammedshihab6969@gmail.com', password: 'chicken123' },
+  { email: 'Mohammedshihab6868@gmail.com', password: 'chicken123' },
+];
 
 async function seed() {
-  const result = await prisma.user.createMany({
-    data: [
-      { email: 'Mohammedshihab6969@gmail.com', password: 'chicken123' },
-      { email: 'Mohammedshihab6868@gmail.com', password: 'chicken123' },
-    ],
-    skipDuplicates: true,
-  });
+  await Promise.all(
+    users.map(async ({ email, password }) => {
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-  console.log(`Seeded ${result.count} users`);
+      await prisma.user.upsert({
+        where: { email },
+        update: { password: hashedPassword },
+        create: { email, password: hashedPassword },
+      });
+    }),
+  );
+
+  console.log(`Seeded ${users.length} users`);
 }
 
 seed()
