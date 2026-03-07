@@ -9,7 +9,7 @@ export function NavigationHeader() {
         className="flex items-center gap-3"
       >
         <div className="mono-ui grid h-11 w-11 place-items-center border border-[#0A0A0A] bg-[#F4F3EF] text-[11px] font-semibold uppercase">
-          mo
+          m-s
         </div>
         <span className="mono-ui text-[12px] font-semibold tracking-[-0.03em] text-[#0A0A0A]">
           mo-stripe
