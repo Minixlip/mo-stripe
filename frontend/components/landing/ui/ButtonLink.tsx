@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ButtonLinkProps } from '../types';
 
 export function ButtonLink({
@@ -14,7 +15,7 @@ export function ButtonLink({
       : 'border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] text-[#0A0A0A] hover:bg-[#FFFFFF]';
 
   return (
-    <a
+    <Link
       href={href}
       className={`${baseClasses} ${variantClasses}`}
     >
@@ -24,6 +25,6 @@ export function ButtonLink({
           {icon}
         </span>
       ) : null}
-    </a>
+    </Link>
   );
 }

@@ -2,7 +2,6 @@ import {
   EngineeringGuarantees,
   HeroColumn,
   LedgerShowcase,
-  NavigationHeader,
   SiteFooter,
 } from '@/components/landing';
 
