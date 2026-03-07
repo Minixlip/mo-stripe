@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 type IconProps = {
   className?: string;
@@ -8,13 +8,7 @@ type ButtonLinkProps = {
   children: ReactNode;
   href: string;
   icon?: ReactNode;
-  variant?: "primary" | "secondary";
-};
-
-type MetricCardProps = {
-  label: string;
-  value: string;
-  detail?: string;
+  variant?: 'primary' | 'secondary';
 };
 
 type UtilityCardProps = {
@@ -26,7 +20,7 @@ type UtilityCardProps = {
 type HighlightRow = {
   label: string;
   value: string;
-  tone?: "default" | "accent" | "muted";
+  tone?: 'default' | 'accent' | 'muted';
 };
 
 type EmployerHighlightCardProps = {
@@ -43,117 +37,161 @@ type EmployerHighlightCardProps = {
   rows: HighlightRow[];
 };
 
-const navigationItems = ["Product", "Pricing", "Docs", "Security"];
+const navigationItems = ['Product', 'Pricing', 'Docs', 'Security'];
 
-const metrics = [
-  { label: "UPTIME", value: "99.99%" },
-  { label: "SETTLEMENT", value: "T+0" },
-  { label: "LEDGER LINES", value: "1px" },
-  { label: "NUMERALS", value: "TABULAR" },
+const techStack = [
+  'Node.js',
+  'Express',
+  'TypeScript',
+  'Prisma',
+  'Zod',
+  'bcrypt',
+  'jsonwebtoken',
+  'PostgreSQL',
+  'Supabase',
+  'Next.js',
+];
+
+const architectureLayers = [
+  { step: '01', name: 'Frontend Dashboard', note: 'operator console' },
+  { step: '02', name: 'Express API Layer', note: 'routing + validation' },
+  { step: '03', name: 'Service Layer', note: 'business orchestration' },
+  { step: '04', name: 'Ledger Engine', note: 'posting + transfer rules' },
+  { step: '05', name: 'PostgreSQL / Prisma', note: 'durable persistence' },
+];
+
+const architectureNotes = [
+  { label: 'EDGE', value: 'Express + Zod' },
+  { label: 'DOMAIN', value: 'service orchestration' },
+  { label: 'STORAGE', value: 'Prisma to Postgres' },
+];
+
+const processingChecks = [
+  { label: 'schema validation', detail: 'Zod contract', status: 'pass' },
+  { label: 'idempotency key', detail: 'retry safe', status: 'locked' },
+  { label: 'posting rules', detail: 'debit = credit', status: 'balanced' },
+  { label: 'audit write', detail: 'append only', status: 'logged' },
 ];
 
 const transactions = [
-  { amount: "+ $ 1,040.00", label: "INVOICE_PAID", positive: true, muted: true },
-  { amount: "- $ 12.50", label: "COFFEE", positive: false },
-  { amount: "+ $ 500.00", label: "DEPOSIT", positive: true },
-  { amount: "- $ 80.00", label: "SOFTWARE", positive: false },
-  { amount: "- $ 15.99", label: "SUBSCRIPTION", positive: false },
-  { amount: "+ $ 2,200.00", label: "PAYROLL", positive: true },
-  { amount: "- $ 105.00", label: "UTILITIES", positive: false },
-  { amount: "- $ 45.20", label: "AWS_BILLING", positive: false },
-  { amount: "- $ 120.50", label: "WHOLE_FOODS", positive: false },
-  { amount: "+ $ 500.00", label: "PEER_TRANSFER", positive: true, muted: true },
+  {
+    amount: '+ $ 1,040.00',
+    label: 'INVOICE_PAID',
+    positive: true,
+    muted: true,
+  },
+  { amount: '- $ 12.50', label: 'COFFEE', positive: false },
+  { amount: '+ $ 500.00', label: 'DEPOSIT', positive: true },
+  { amount: '- $ 80.00', label: 'SOFTWARE', positive: false },
+  { amount: '- $ 15.99', label: 'SUBSCRIPTION', positive: false },
+  { amount: '+ $ 2,200.00', label: 'PAYROLL', positive: true },
+  { amount: '- $ 105.00', label: 'UTILITIES', positive: false },
+  { amount: '- $ 45.20', label: 'AWS_BILLING', positive: false },
+  { amount: '- $ 120.50', label: 'WHOLE_FOODS', positive: false },
+  { amount: '+ $ 500.00', label: 'PEER_TRANSFER', positive: true, muted: true },
 ];
 
 const accounts = [
-  { name: "Checking", masked: "*4092", balance: "$ 14,092.50" },
-  { name: "Savings", masked: "*9982", balance: "$ 110,000.00" },
+  { name: 'Checking', masked: '*4092', balance: '$ 14,092.50' },
+  { name: 'Savings', masked: '*9982', balance: '$ 110,000.00' },
 ];
 
 const utilityCards = [
-  { label: "EXPORT", value: "CSV / JSON", icon: <DownloadIcon className="h-4 w-4" /> },
-  { label: "WEBHOOKS", value: "real-time", icon: <ActivityIcon className="h-4 w-4" /> },
-  { label: "AUDIT TRAIL", value: "immutable", icon: <BranchIcon className="h-4 w-4" /> },
+  {
+    label: 'EXPORT',
+    value: 'CSV / JSON',
+    icon: <DownloadIcon className="h-4 w-4" />,
+  },
+  {
+    label: 'WEBHOOKS',
+    value: 'real-time',
+    icon: <ActivityIcon className="h-4 w-4" />,
+  },
+  {
+    label: 'AUDIT TRAIL',
+    value: 'immutable',
+    icon: <BranchIcon className="h-4 w-4" />,
+  },
 ];
 
 const architectureSignals = [
-  { label: "APPEND-ONLY", value: "reliable audit trail" },
-  { label: "ALL-OR-NOTHING", value: "single transaction outcome" },
-  { label: "RETRY-SAFE", value: "duplicate protection built in" },
-  { label: "FK-GUARDED", value: "strict relational integrity" },
+  { label: 'APPEND-ONLY', value: 'reliable audit trail' },
+  { label: 'ALL-OR-NOTHING', value: 'single transaction outcome' },
+  { label: 'RETRY-SAFE', value: 'duplicate protection built in' },
+  { label: 'FK-GUARDED', value: 'strict relational integrity' },
 ];
 
 const employerHighlights: EmployerHighlightCardProps[] = [
   {
-    index: "01",
-    eyebrow: "AUDIT GUARANTEE",
-    title: "Immutable Ledger",
+    index: '01',
+    eyebrow: 'AUDIT GUARANTEE',
+    title: 'Immutable Ledger',
     description:
-      "Every transaction is append-only to guarantee a reliable audit trail.",
-    system: "ledger_writer",
-    mode: "append stream",
-    invariant: "seq monotonic",
-    proofLabel: "write mode",
-    proofValue: "append_only",
-    footer: "history preserved",
+      'Every transaction is append-only to guarantee a reliable audit trail.',
+    system: 'ledger_writer',
+    mode: 'append stream',
+    invariant: 'seq monotonic',
+    proofLabel: 'write mode',
+    proofValue: 'append_only',
+    footer: 'history preserved',
     rows: [
-      { label: "ENTRY POLICY", value: "WRITE ONCE", tone: "accent" },
-      { label: "REVERSALS", value: "COMPENSATING ENTRY" },
-      { label: "TRACE", value: "FULL LINEAGE" },
+      { label: 'ENTRY POLICY', value: 'WRITE ONCE', tone: 'accent' },
+      { label: 'REVERSALS', value: 'COMPENSATING ENTRY' },
+      { label: 'TRACE', value: 'FULL LINEAGE' },
     ],
   },
   {
-    index: "02",
-    eyebrow: "TRANSFER SAFETY",
-    title: "Atomic Transfers",
+    index: '02',
+    eyebrow: 'TRANSFER SAFETY',
+    title: 'Atomic Transfers',
     description:
-      "Database transactions ensure transfers succeed or fail as a single operation.",
-    system: "transfer_service",
-    mode: "db transaction",
-    invariant: "no split outcome",
-    proofLabel: "txn scope",
-    proofValue: "all_or_nothing",
-    footer: "no partial movement",
+      'Database transactions ensure transfers succeed or fail as a single operation.',
+    system: 'transfer_service',
+    mode: 'db transaction',
+    invariant: 'no split outcome',
+    proofLabel: 'txn scope',
+    proofValue: 'all_or_nothing',
+    footer: 'no partial movement',
     rows: [
-      { label: "DEBIT", value: "LOCKED" },
-      { label: "CREDIT", value: "LOCKED" },
-      { label: "COMMIT", value: "SHARED OUTCOME", tone: "accent" },
+      { label: 'DEBIT', value: 'LOCKED' },
+      { label: 'CREDIT', value: 'LOCKED' },
+      { label: 'COMMIT', value: 'SHARED OUTCOME', tone: 'accent' },
     ],
   },
   {
-    index: "03",
-    eyebrow: "REPLAY CONTROL",
-    title: "Idempotent Requests",
+    index: '03',
+    eyebrow: 'REPLAY CONTROL',
+    title: 'Idempotent Requests',
     description:
-      "Safe retry mechanisms prevent duplicate financial operations.",
-    system: "request_gateway",
-    mode: "idempotency key",
-    invariant: "same key, same effect",
-    proofLabel: "request key",
-    proofValue: "retry_safe",
-    footer: "duplicate prevention",
+      'Safe retry mechanisms prevent duplicate financial operations.',
+    system: 'request_gateway',
+    mode: 'idempotency key',
+    invariant: 'same key, same effect',
+    proofLabel: 'request key',
+    proofValue: 'retry_safe',
+    footer: 'duplicate prevention',
     rows: [
-      { label: "REQUEST ID", value: "REUSED ON RETRY" },
-      { label: "MATCH POLICY", value: "SAME INPUT REQUIRED" },
-      { label: "RESPONSE", value: "SINGLE EFFECT", tone: "accent" },
+      { label: 'REQUEST ID', value: 'REUSED ON RETRY' },
+      { label: 'MATCH POLICY', value: 'SAME INPUT REQUIRED' },
+      { label: 'RESPONSE', value: 'SINGLE EFFECT', tone: 'accent' },
     ],
   },
   {
-    index: "04",
-    eyebrow: "DATA INTEGRITY",
-    title: "Relational Data Model",
+    index: '04',
+    eyebrow: 'DATA INTEGRITY',
+    title: 'Relational Data Model',
     description:
-      "Accounts, users, and transactions modeled with strict relational integrity.",
-    system: "schema_core",
-    mode: "foreign keys",
-    invariant: "orphans blocked",
-    proofLabel: "model",
-    proofValue: "fk_constrained",
-    footer: "schema enforced",
+      'Accounts, users, and transactions modeled with strict relational integrity.',
+    system: 'schema_core',
+    mode: 'foreign keys',
+    invariant: 'orphans blocked',
+    proofLabel: 'model',
+    proofValue: 'fk_constrained',
+    footer: 'schema enforced',
     rows: [
-      { label: "USERS", value: "OWN ACCOUNTS" },
-      { label: "ACCOUNTS", value: "OWN TRANSACTIONS" },
-      { label: "DELETES", value: "RULE-GUARDED", tone: "accent" },
+      { label: 'USERS', value: 'OWN ACCOUNTS' },
+      { label: 'ACCOUNTS', value: 'OWN TRANSACTIONS' },
+      { label: 'DELETES', value: 'RULE-GUARDED', tone: 'accent' },
     ],
   },
 ];
@@ -165,7 +203,10 @@ export default function Home() {
     <div className="page-surface min-h-screen">
       <div className="mx-auto flex w-full max-w-[1960px] flex-col px-4 py-4 sm:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <header className="flex flex-wrap items-center justify-between gap-4 border border-[#0A0A0A] bg-[rgba(255,255,255,0.62)] px-4 py-4 backdrop-blur-[2px]">
-          <a href="#" className="flex items-center gap-3">
+          <a
+            href="#"
+            className="flex items-center gap-3"
+          >
             <div className="mono-ui grid h-11 w-11 place-items-center border border-[#0A0A0A] bg-[#F4F3EF] text-[11px] font-semibold uppercase">
               mo
             </div>
@@ -187,10 +228,16 @@ export default function Home() {
           </nav>
 
           <div className="flex flex-wrap items-center gap-3">
-            <ButtonLink href="#" variant="secondary">
+            <ButtonLink
+              href="#"
+              variant="secondary"
+            >
               Sign in
             </ButtonLink>
-            <ButtonLink href="#" icon={<ArrowRightIcon className="h-3.5 w-3.5" />}>
+            <ButtonLink
+              href="#"
+              icon={<ArrowRightIcon className="h-3.5 w-3.5" />}
+            >
               Access Ledger
             </ButtonLink>
           </div>
@@ -213,27 +260,48 @@ export default function Home() {
                     Your money, audited.
                   </p>
                   <p className="max-w-[38rem] text-[18px] leading-8 text-[#0A0A0A]/55">
-                    A precise, monospaced view of balances and movement built like an
-                    instrument. Crisp borders. Tabular numerals. A live feed that
-                    reads like a receipt roll.
+                    A precise, monospaced view of balances and movement built
+                    like an instrument. Crisp borders. Tabular numerals. A live
+                    feed that reads like a receipt roll.
                   </p>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <ButtonLink href="#" icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />}>
+                  <ButtonLink
+                    href="#"
+                    icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />}
+                  >
                     Explore More
                   </ButtonLink>
-                  <ButtonLink href="#" icon={<SquareIcon className="h-3.5 w-3.5" />} variant="secondary">
+                  <ButtonLink
+                    href="#"
+                    icon={<SquareIcon className="h-3.5 w-3.5" />}
+                    variant="secondary"
+                  >
                     Read Docs
                   </ButtonLink>
                 </div>
+
+                <div className="border border-[#0A0A0A] bg-[rgba(255,255,255,0.42)] px-4 py-4">
+                  <div className="mono-ui flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
+                    <span className="text-[#0A0A0A]/60">BUILT WITH</span>
+                    <span className="text-[#0A0A0A]/55">core stack</span>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="mono-ui border border-[#0A0A0A] bg-[#FFFFFF]/45 px-3 py-2 text-[11px] tracking-[0.04em] text-[#0A0A0A] transition-colors duration-150 hover:bg-[#FFFFFF]"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {metrics.map((metric) => (
-                  <MetricCard key={metric.label} label={metric.label} value={metric.value} />
-                ))}
-              </div>
+              <SystemArchitecturePanel />
 
               <div className="mono-ui flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-[#0A0A0A] pt-4 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/60">
                 <span className="flex items-center gap-2">
@@ -274,7 +342,9 @@ export default function Home() {
                     <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
                       TOTAL BALANCE
                     </div>
-                    <div className="mono-ui mt-5 text-[24px] font-medium leading-none">$</div>
+                    <div className="mono-ui mt-5 text-[24px] font-medium leading-none">
+                      $
+                    </div>
                     <div className="mono-ui mt-4 text-[clamp(1.9rem,3vw,3.15rem)] leading-none font-semibold tracking-[-0.07em] text-[#0A0A0A]">
                       124,092.50
                     </div>
@@ -293,10 +363,20 @@ export default function Home() {
                   </div>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <ButtonLink href="#" icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />} variant="secondary">
+                    <ButtonLink
+                      href="#"
+                      icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />}
+                      variant="secondary"
+                    >
                       Deposit
                     </ButtonLink>
-                    <ButtonLink href="#" icon={<ArrowRightIcon className="h-3.5 w-3.5 rotate-[-45deg]" />} variant="secondary">
+                    <ButtonLink
+                      href="#"
+                      icon={
+                        <ArrowRightIcon className="h-3.5 w-3.5 rotate-[-45deg]" />
+                      }
+                      variant="secondary"
+                    >
                       Withdraw
                     </ButtonLink>
                   </div>
@@ -312,7 +392,10 @@ export default function Home() {
                   <div className="mt-4 border border-[#0A0A0A] bg-[#F4F3EF]/80 p-4">
                     <div className="mono-ui flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
                       <span className="text-[#0A0A0A]/60">ACCOUNTS</span>
-                      <a href="#" className="text-[#0A0A0A]/80 underline-offset-4 hover:underline">
+                      <a
+                        href="#"
+                        className="text-[#0A0A0A]/80 underline-offset-4 hover:underline"
+                      >
                         + new
                       </a>
                     </div>
@@ -325,7 +408,9 @@ export default function Home() {
                         >
                           <div className="mono-ui text-[12px] uppercase tracking-[0.08em] text-[#0A0A0A]">
                             <div>{account.name}</div>
-                            <div className="mt-2 text-[#0A0A0A]/60">{account.masked}</div>
+                            <div className="mt-2 text-[#0A0A0A]/60">
+                              {account.masked}
+                            </div>
                           </div>
                           <div className="mono-ui text-right text-[12px] font-semibold uppercase tracking-[0.06em] text-[#0A0A0A]">
                             {account.balance}
@@ -336,7 +421,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="p-4">
+                <div className="flex h-full flex-col p-4">
                   <div className="mono-ui mb-4 flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
                     <span className="text-[#0A0A0A]/80">THE RECEIPT ROLL</span>
                     <span className="flex items-center gap-2 text-[#0A0A0A]/80">
@@ -362,17 +447,23 @@ export default function Home() {
                           >
                             <span
                               className={[
-                                "font-medium",
+                                'font-medium',
                                 transaction.muted
-                                  ? "text-[#98bfb7]"
+                                  ? 'text-[#98bfb7]'
                                   : transaction.positive
-                                    ? "text-[#167c5a]"
-                                    : "text-[#0A0A0A]/80",
-                              ].join(" ")}
+                                    ? 'text-[#167c5a]'
+                                    : 'text-[#0A0A0A]/80',
+                              ].join(' ')}
                             >
                               {transaction.amount}
                             </span>
-                            <span className={transaction.muted ? "text-[#0A0A0A]/30" : "text-[#0A0A0A]/80"}>
+                            <span
+                              className={
+                                transaction.muted
+                                  ? 'text-[#0A0A0A]/30'
+                                  : 'text-[#0A0A0A]/80'
+                              }
+                            >
                               {transaction.label}
                             </span>
                           </div>
@@ -382,77 +473,99 @@ export default function Home() {
                   </div>
 
                   <p className="mono-ui mt-4 text-[11px] leading-6 uppercase tracking-[0.08em] text-[#0A0A0A]/65">
-                    Tip: numbers use tabular numerals for perfect alignment.{" "}
-                    <a href="#" className="text-[#0A0A0A] underline underline-offset-4">
+                    Tip: numbers use tabular numerals for perfect alignment.{' '}
+                    <a
+                      href="#"
+                      className="text-[#0A0A0A] underline underline-offset-4"
+                    >
                       View sample ledger
                     </a>
                     .
                   </p>
+
+                  <ProcessingChecksPanel />
                 </div>
               </div>
 
               <div className="grid gap-px border-t border-[#0A0A0A] bg-[#0A0A0A] md:grid-cols-3">
                 {utilityCards.map((card) => (
-                  <UtilityCard key={card.label} icon={card.icon} label={card.label} value={card.value} />
+                  <UtilityCard
+                    key={card.label}
+                    icon={card.icon}
+                    label={card.label}
+                    value={card.value}
+                  />
                 ))}
               </div>
             </section>
-            </section>
+          </section>
 
-            <section className="mt-6 overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]">
-              <div className="grid gap-px border-b border-[#0A0A0A] bg-[#0A0A0A] xl:grid-cols-[minmax(360px,0.72fr)_minmax(0,1.28fr)]">
-                <div className="bg-[rgba(255,255,255,0.52)] px-4 py-5 lg:px-5">
-                  <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
-                    ENGINEERING GUARANTEES
-                  </div>
-                  <h2 className="mt-4 max-w-[22rem] text-[clamp(2rem,3vw,3.2rem)] font-semibold leading-[0.94] tracking-[-0.07em] text-[#0A0A0A]">
-                    How the backend earns the interface.
-                  </h2>
-                  <p className="mt-4 max-w-[30rem] text-[16px] leading-7 text-[#0A0A0A]/58">
-                    The hero above shows the product surface. These panels show the
-                    operating guarantees behind it: audit safety, transfer integrity,
-                    retry protection, and a strict relational core.
-                  </p>
+          <section className="mt-6 overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]">
+            <div className="grid gap-px border-b border-[#0A0A0A] bg-[#0A0A0A] xl:grid-cols-[minmax(360px,0.72fr)_minmax(0,1.28fr)]">
+              <div className="bg-[rgba(255,255,255,0.52)] px-4 py-5 lg:px-5">
+                <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
+                  ENGINEERING GUARANTEES
                 </div>
+                <h2 className="mt-4 max-w-[22rem] text-[clamp(2rem,3vw,3.2rem)] font-semibold leading-[0.94] tracking-[-0.07em] text-[#0A0A0A]">
+                  How the backend earns the interface.
+                </h2>
+                <p className="mt-4 max-w-[30rem] text-[16px] leading-7 text-[#0A0A0A]/58">
+                  The hero above shows the product surface. These panels show
+                  the operating guarantees behind it: audit safety, transfer
+                  integrity, retry protection, and a strict relational core.
+                </p>
+              </div>
 
-                <div className="grid gap-px bg-[#0A0A0A] sm:grid-cols-2 xl:grid-cols-4">
-                  {architectureSignals.map((signal) => (
-                    <div
-                      key={signal.label}
-                      className="flex items-center justify-between gap-4 bg-[rgba(255,255,255,0.52)] px-4 py-4"
-                    >
-                      <div>
-                        <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
-                          {signal.label}
-                        </div>
-                        <div className="mt-3 text-[15px] leading-6 text-[#0A0A0A]/72">
-                          {signal.value}
-                        </div>
+              <div className="grid gap-px bg-[#0A0A0A] sm:grid-cols-2 xl:grid-cols-4">
+                {architectureSignals.map((signal) => (
+                  <div
+                    key={signal.label}
+                    className="flex items-center justify-between gap-4 bg-[rgba(255,255,255,0.52)] px-4 py-4"
+                  >
+                    <div>
+                      <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
+                        {signal.label}
                       </div>
-                      <span className="h-2.5 w-2.5 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
+                      <div className="mt-3 text-[15px] leading-6 text-[#0A0A0A]/72">
+                        {signal.value}
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid gap-px bg-[#0A0A0A] md:grid-cols-2 xl:grid-cols-4">
-                {employerHighlights.map((highlight) => (
-                  <EmployerHighlightCard key={highlight.title} {...highlight} />
+                    <span className="h-2.5 w-2.5 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
+                  </div>
                 ))}
               </div>
-            </section>
-          </main>
+            </div>
+
+            <div className="grid gap-px bg-[#0A0A0A] md:grid-cols-2 xl:grid-cols-4">
+              {employerHighlights.map((highlight) => (
+                <EmployerHighlightCard
+                  key={highlight.title}
+                  {...highlight}
+                />
+              ))}
+            </div>
+          </section>
+        </main>
 
         <footer className="mono-ui mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-[#0A0A0A] pt-4 pb-4 text-[11px] uppercase tracking-[0.1em] text-[#0A0A0A]/60">
           <p>Copyright 2026 mo-stripe. Built with 1px discipline.</p>
           <div className="flex flex-wrap items-center gap-5">
-            <a href="#" className="transition-colors duration-150 hover:text-[#0A0A0A]">
+            <a
+              href="#"
+              className="transition-colors duration-150 hover:text-[#0A0A0A]"
+            >
               Privacy
             </a>
-            <a href="#" className="transition-colors duration-150 hover:text-[#0A0A0A]">
+            <a
+              href="#"
+              className="transition-colors duration-150 hover:text-[#0A0A0A]"
+            >
               Terms
             </a>
-            <a href="#" className="transition-colors duration-150 hover:text-[#0A0A0A]">
+            <a
+              href="#"
+              className="transition-colors duration-150 hover:text-[#0A0A0A]"
+            >
               Status
             </a>
           </div>
@@ -466,17 +579,20 @@ function ButtonLink({
   children,
   href,
   icon,
-  variant = "primary",
+  variant = 'primary',
 }: ButtonLinkProps) {
   const baseClasses =
-    "mono-ui inline-flex items-center justify-center gap-3 border px-4 py-3 text-[13px] uppercase tracking-[0.12em] transition-colors duration-150";
+    'mono-ui inline-flex items-center justify-center gap-3 border px-4 py-3 text-[13px] uppercase tracking-[0.12em] transition-colors duration-150';
   const variantClasses =
-    variant === "primary"
-      ? "key-press border-[#0A0A0A] bg-[#C7F000] text-[#0A0A0A]"
-      : "border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] text-[#0A0A0A] hover:bg-[#FFFFFF]";
+    variant === 'primary'
+      ? 'key-press border-[#0A0A0A] bg-[#C7F000] text-[#0A0A0A]'
+      : 'border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] text-[#0A0A0A] hover:bg-[#FFFFFF]';
 
   return (
-    <a href={href} className={`${baseClasses} ${variantClasses}`}>
+    <a
+      href={href}
+      className={`${baseClasses} ${variantClasses}`}
+    >
       <span>{children}</span>
       {icon ? (
         <span className="grid h-5 w-5 place-items-center border border-current bg-transparent">
@@ -487,18 +603,98 @@ function ButtonLink({
   );
 }
 
-function MetricCard({ label, value, detail }: MetricCardProps) {
+function SystemArchitecturePanel() {
   return (
-    <div className="border border-[#0A0A0A] bg-[rgba(255,255,255,0.42)] px-4 py-5">
-      <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/60">
-        {label}
+    <section className="border border-[#0A0A0A] bg-[rgba(255,255,255,0.46)] px-4 py-4">
+      <div className="mono-ui flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
+        <span className="text-[#0A0A0A]/60">SYSTEM ARCHITECTURE</span>
+        <span className="text-[#0A0A0A]/55">request path</span>
       </div>
-      <div className="mono-ui mt-3 text-[1.65rem] font-semibold tracking-[-0.04em] text-[#0A0A0A]">
-        {value}
+
+      <p className="mt-4 max-w-[36rem] text-[15px] leading-7 text-[#0A0A0A]/58">
+        Requests enter through the dashboard, pass across the API and service
+        layers, are committed by the ledger engine, and persist through Prisma
+        into PostgreSQL.
+      </p>
+
+      <div className="mt-5 space-y-1">
+        {architectureLayers.map((layer, index) => (
+          <div key={layer.name}>
+            <div className="border border-[#0A0A0A] bg-[#F4F3EF]/78 px-4 py-3">
+              <div className="mono-ui flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.12em] text-[#0A0A0A]/55">
+                <span>stage {layer.step}</span>
+                <span>{layer.note}</span>
+              </div>
+              <div className="mt-2 text-[1.05rem] font-medium tracking-[-0.04em] text-[#0A0A0A]">
+                {layer.name}
+              </div>
+            </div>
+
+            {index < architectureLayers.length - 1 ? (
+              <div className="mono-ui flex items-center gap-2 px-2 py-1 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/48">
+                <span className="text-[#C7F000]">v</span>
+                <span>handoff</span>
+              </div>
+            ) : null}
+          </div>
+        ))}
       </div>
-      {detail ? (
-        <div className="mt-2 text-sm text-[#0A0A0A]/55">{detail}</div>
-      ) : null}
+
+      <div className="mt-4 grid gap-px bg-[#0A0A0A] sm:grid-cols-3">
+        {architectureNotes.map((note) => (
+          <div
+            key={note.label}
+            className="bg-[rgba(255,255,255,0.46)] px-4 py-4"
+          >
+            <div className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/60">
+              {note.label}
+            </div>
+            <div className="mt-3 text-[15px] leading-6 text-[#0A0A0A]/72">
+              {note.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ProcessingChecksPanel() {
+  return (
+    <div className="mt-4 flex flex-1 flex-col border border-[#0A0A0A] bg-[#F4F3EF]/78 p-4">
+      <div className="mono-ui flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+        <span className="text-[#0A0A0A]/60">PRE-COMMIT CHECKS</span>
+        <span className="flex items-center gap-2 text-[#0A0A0A]/80">
+          <span className="h-2 w-2 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
+          live path
+        </span>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        {processingChecks.map((check) => (
+          <div
+            key={check.label}
+            className="flex items-center justify-between gap-4 border border-[#0A0A0A] bg-[#FFFFFF]/45 px-3 py-3"
+          >
+            <div>
+              <div className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/60">
+                {check.label}
+              </div>
+              <div className="mt-1 text-[14px] text-[#0A0A0A]/68">
+                {check.detail}
+              </div>
+            </div>
+            <span className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#167c5a]">
+              {check.status}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="mono-ui mt-auto pt-4 text-[11px] leading-5 uppercase tracking-[0.08em] text-[#0A0A0A]/60">
+        Every transfer walks the same control path before it reaches the ledger
+        engine.
+      </p>
     </div>
   );
 }
@@ -582,13 +778,13 @@ function EmployerHighlightCard({
                   </span>
                   <span
                     className={[
-                      "mono-ui text-[11px] uppercase tracking-[0.1em]",
-                      row.tone === "accent"
-                        ? "text-[#167c5a]"
-                        : row.tone === "muted"
-                          ? "text-[#0A0A0A]/45"
-                          : "text-[#0A0A0A]",
-                    ].join(" ")}
+                      'mono-ui text-[11px] uppercase tracking-[0.1em]',
+                      row.tone === 'accent'
+                        ? 'text-[#167c5a]'
+                        : row.tone === 'muted'
+                          ? 'text-[#0A0A0A]/45'
+                          : 'text-[#0A0A0A]',
+                    ].join(' ')}
                   >
                     {row.value}
                   </span>
@@ -607,7 +803,7 @@ function EmployerHighlightCard({
   );
 }
 
-function ArrowRightIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+function ArrowRightIcon({ className = 'h-3.5 w-3.5' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -626,7 +822,7 @@ function ArrowRightIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   );
 }
 
-function ArrowUpRightIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+function ArrowUpRightIcon({ className = 'h-3.5 w-3.5' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -645,7 +841,7 @@ function ArrowUpRightIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   );
 }
 
-function SquareIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+function SquareIcon({ className = 'h-3.5 w-3.5' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -664,7 +860,7 @@ function SquareIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   );
 }
 
-function ShieldIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+function ShieldIcon({ className = 'h-3.5 w-3.5' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -689,7 +885,7 @@ function ShieldIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   );
 }
 
-function TransferIcon({ className = "h-4 w-4" }: IconProps) {
+function TransferIcon({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -708,7 +904,7 @@ function TransferIcon({ className = "h-4 w-4" }: IconProps) {
   );
 }
 
-function DownloadIcon({ className = "h-4 w-4" }: IconProps) {
+function DownloadIcon({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -727,7 +923,7 @@ function DownloadIcon({ className = "h-4 w-4" }: IconProps) {
   );
 }
 
-function ActivityIcon({ className = "h-4 w-4" }: IconProps) {
+function ActivityIcon({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
@@ -746,7 +942,7 @@ function ActivityIcon({ className = "h-4 w-4" }: IconProps) {
   );
 }
 
-function BranchIcon({ className = "h-4 w-4" }: IconProps) {
+function BranchIcon({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg
       aria-hidden="true"
