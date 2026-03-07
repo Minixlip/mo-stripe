@@ -1,0 +1,176 @@
+# mo-stripe: Architectural Ledger Design System
+
+## Brand Identity
+**Aesthetic**: Architectural Ledger - refined minimalism with stark precision
+**Tagline**: "Your money, audited"
+**Core Principle**: No rounded corners, 1px discipline, tabular numerals, monospace precision
+
+## Color Palette
+- **Obsidian**: #0A0A0A (primary border, text, high contrast)
+- **Alabaster**: #F4F3EF (background, subtle dot-grid)
+- **Paper**: #FFFFFF (card backgrounds, input areas)
+- **Chartreuse**: #C7F000 (primary CTA accent, highlights)
+- **Muted**: #6B7280 (secondary text, descriptions)
+- Text opacity variants: /60, /55, /80, /85 for hierarchy
+
+## Typography
+- **Heading Font**: General Sans (400, 500, 600)
+  - H1: 4xl-6xl, semibold, tracking-tight
+  - H2: 3xl-4xl, semibold, tracking-tight
+  - H3: 2xl-3xl, semibold
+- **Body Font**: General Sans (400, 500)
+  - Text: 15px, leading-6
+  - Labels/UI: 12px, 11px monospace
+- **Monospace Font**: JetBrains Mono (400, 500, 600)
+  - All tabular numerals, financial data, code-like UI
+  - Feature: font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "ss01" 1;
+- **Size Scale**: 11px (micro), 12px (UI), 13px (body), 14px-44px (displays)
+
+## Button & Interactive Styles
+```css
+.key {
+  box-shadow: 2px 2px 0 #0A0A0A;
+  transform: translate(0,0);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.key:active {
+  transform: translate(2px,2px);
+  box-shadow: 0px 0px 0 #0A0A0A;
+}
+```
+- **Primary CTA**: Chartreuse background + physical key effect
+- **Secondary**: White background, obsidian border, hover: bg-zinc-50
+- **Spacing**: px-3 py-2 (compact), px-4 py-3 (standard)
+
+## Borders & Structure
+- **Border Style**: 1px solid #0A0A0A (no border-radius above 2px)
+- **Spacing Scale**: 
+  - Gap/Padding: 2px, 3px, 4px, 6px (tight)
+  - Section spacing: 8px (within), 12px-14px (between sections), 24px (major)
+- **Box Shadow**: None (refined aesthetic) OR 2px 2px 0px #0A0A0A (physical buttons only)
+
+## Background & Texture
+- **Dot Grid Pattern**:
+```css
+background-color: #F4F3EF;
+background-image:
+  radial-gradient(rgba(10,10,10,.08) 1px, transparent 1px),
+  radial-gradient(rgba(10,10,10,.04) 1px, transparent 1px),
+  linear-gradient(to bottom, rgba(10,10,10,.02), rgba(10,10,10,0));
+background-size: 18px 18px, 72px 72px, 100% 100%;
+background-position: 0 0, 10px 10px, 0 0;
+```
+- **Paper Noise**: SVG fractal noise overlay, opacity .06, mix-blend-mode: multiply
+
+## Animations
+- **Ledger Scroll**: `@keyframes roll { 0% { transform: translateY(0%); } 100% { transform: translateY(-50%); } }` — 16s linear infinite
+- **Hover States**: transition-colors 120ms, opacity 120ms (subtle)
+- **Respects**: @media (prefers-reduced-motion: reduce)
+
+## Page Structure
+### Navigation Header (Component)
+- Brand logo (mo-stripe in box)
+- Desktop nav: Product, Pricing, Docs, Security
+- Actions: Sign in button, Access Ledger (chartreuse CTA)
+- All links use :href bindings per page
+
+### Page Footer (Component)
+- Copyright: "© 2026 mo-stripe. Built with 1px discipline."
+- Links: Privacy, Terms, Status (monospace, /60 opacity)
+
+### Content Grid
+- Max-width: 7xl (1280px)
+- Padding: px-6 lg:px-8
+- Layouts: 1-col (mobile), 2-col (tablet), 3-col (desktop)
+- Gap: 8px (tight cards), 24px (sections)
+
+## Reusable Components
+
+### NavigationHeader
+**HTML Structure**: Header with brand, desktop nav, action buttons
+**Key Props**: 
+- `activeItem`: Current page indicator ('product', 'pricing', 'docs', 'security', 'none')
+- Navigation href props: `productHref`, `pricingHref`, `docsHref`, `securityHref`, `signInHref`, `accessLedgerHref`
+**Styling**: 
+- Monospace nav labels (12px), hover: full opacity
+- Active state: text-[#0A0A0A] (solid), inactive: text-[#0A0A0A]/80 (muted)
+- CTA button: Chartreuse bg with physical key effect
+
+### PageFooter
+**HTML Structure**: Footer with copyright and 3 links
+**Key Props**: 
+- `privacyHref`, `termsHref`, `statusHref` for navigation
+**Styling**: 
+- Monospace all text (11px)
+- Text opacity: /55 (copyright), /60 (links)
+- Border-top: 1px obsidian
+- Padding: pt-6 pb-8
+
+### Transaction Feed (Inline Pattern)
+**Structure**: Scrolling list of transaction rows
+**Row Layout**:
+```html
+<div class="flex items-center justify-between gap-4">
+  <div class="mono tabular text-[12px]">
+    <span class="text-emerald-700">+ $ 1,040.00</span> <!-- debit/credit color -->
+  </div>
+  <div class="mono text-[12px] text-[#0A0A0A]/85 text-right">INVOICE_PAID</div>
+</div>
+```
+**Animation**: Seamless infinite scroll (duplicated list halves)
+**Colors**: Deposits: emerald-700, Debits: #0A0A0A (neutral)
+
+### Balance Card (Large Display)
+**Pattern**: 
+```html
+<div class="mono tabular text-[36px-44px] font-semibold">$ 124,092.50</div>
+```
+- Label above (11px, /60 opacity)
+- Large tabular number (all amounts use this pattern)
+- Optional badge: "audited" or "settled"
+
+### Data Grid (2-3 col layout)
+**Cell Pattern**:
+```html
+<div class="border obsidian-border bg-[#F4F3EF] p-4">
+  <div class="mono text-[11px] text-[#0A0A0A]/60">LABEL</div>
+  <div class="mt-2 mono tabular text-[14px] font-semibold">VALUE</div>
+</div>
+```
+- Monospace labels (11px, /60)
+- Monospace values (12-14px, semibold, tabular)
+- Gap: 3px tight
+
+## Visual Hierarchy
+1. **H1 Headlines**: 3xl-6xl sans, #0A0A0A, semibold
+2. **Section Labels**: 11px mono, /60 opacity, all-caps
+3. **Data Values**: 12-14px mono tabular, semibold
+4. **Secondary Text**: 15px sans, /70 opacity (gray)
+5. **Micro Text**: 11px mono, /55 opacity (captions)
+
+## Forms & Inputs
+- **Input Container**: Border obsidian-border bg-[#F4F3EF] p-4
+- **Large Number Input**: 
+  - tabular-nums font feature enabled
+  - Placeholder opacity .35
+  - Focus: outline-none (no browser ring)
+- **Cursor**: caret-color: #0A0A0A (obsidian blink)
+
+## Modal Overlay
+- **Background**: Dim layer (black/10 opacity over alabaster)
+- **Modal**: Max-width-3xl, white bg, centered
+- **Close Button**: 9×9 px icon button with 1px border
+
+## Status Indicators
+- **Live Indicators**: h-2 w-2 rounded-full
+  - Active/Live: bg-[#C7F000] (chartreuse)
+  - Success/Settled: bg-emerald-600
+  - Neutral: bg-white
+- **Labels**: Badge with border, optional icon, all-caps mono text
+
+## Implementation Notes
+- **View Transitions**: @view-transition { navigation: auto; } for smooth page changes
+- **Responsiveness**: Mobile-first, breakpoints at sm (640px), lg (1024px)
+- **Link URLs**: Use full preview URLs (https://p.superdesign.dev/draft/{id}) for inter-page navigation
+- **Icon Library**: Iconify (lucide:* icons)
+- **No Tailwind @layer/@apply**: Use inline classes only
