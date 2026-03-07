@@ -313,10 +313,11 @@ export default function Home() {
               </div>
             </div>
 
-            <section
-              aria-label="Architectural ledger preview"
-              className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]"
-            >
+            <div className="flex flex-col gap-2">
+              <section
+                aria-label="Architectural ledger preview"
+                className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]"
+              >
               <div className="mono-ui flex flex-wrap items-center justify-between gap-3 border-b border-[#0A0A0A] px-4 py-4 text-[12px] uppercase tracking-[0.08em]">
                 <div className="flex items-center gap-3 text-[#0A0A0A]">
                   <span className="h-2.5 w-2.5 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
@@ -421,7 +422,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex h-full flex-col p-4">
+                <div className="p-4">
                   <div className="mono-ui mb-4 flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
                     <span className="text-[#0A0A0A]/80">THE RECEIPT ROLL</span>
                     <span className="flex items-center gap-2 text-[#0A0A0A]/80">
@@ -482,8 +483,6 @@ export default function Home() {
                     </a>
                     .
                   </p>
-
-                  <ProcessingChecksPanel />
                 </div>
               </div>
 
@@ -497,7 +496,9 @@ export default function Home() {
                   />
                 ))}
               </div>
-            </section>
+              </section>
+              <ProcessingChecksPanel />
+            </div>
           </section>
 
           <section className="mt-6 overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]">
@@ -661,8 +662,8 @@ function SystemArchitecturePanel() {
 
 function ProcessingChecksPanel() {
   return (
-    <div className="mt-4 flex flex-1 flex-col border border-[#0A0A0A] bg-[#F4F3EF]/78 p-4">
-      <div className="mono-ui flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
+    <section className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]">
+      <div className="mono-ui flex items-center justify-between gap-4 border-b border-[#0A0A0A] px-4 py-3 text-[11px] uppercase tracking-[0.12em]">
         <span className="text-[#0A0A0A]/60">PRE-COMMIT CHECKS</span>
         <span className="flex items-center gap-2 text-[#0A0A0A]/80">
           <span className="h-2 w-2 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
@@ -670,32 +671,33 @@ function ProcessingChecksPanel() {
         </span>
       </div>
 
-      <div className="mt-4 space-y-2">
+      <div className="border-b border-[#0A0A0A] px-4 py-4">
+        <p className="max-w-[42rem] text-[14px] leading-6 text-[#0A0A0A]/60">
+          Every transfer walks the same control path before it reaches the
+          ledger engine, so validation, replay protection, and posting rules are
+          enforced consistently.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-px bg-[#0A0A0A] xl:grid-cols-4">
         {processingChecks.map((check) => (
           <div
             key={check.label}
-            className="flex items-center justify-between gap-4 border border-[#0A0A0A] bg-[#FFFFFF]/45 px-3 py-3"
+            className="bg-[rgba(255,255,255,0.52)] px-4 py-4"
           >
-            <div>
-              <div className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/60">
-                {check.label}
-              </div>
-              <div className="mt-1 text-[14px] text-[#0A0A0A]/68">
-                {check.detail}
-              </div>
+            <div className="mono-ui text-[10px] uppercase tracking-[0.12em] text-[#0A0A0A]/60">
+              {check.label}
             </div>
-            <span className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#167c5a]">
+            <div className="mt-3 text-[13px] leading-6 text-[#0A0A0A]/68">
+              {check.detail}
+            </div>
+            <div className="mono-ui mt-4 text-[10px] uppercase tracking-[0.12em] text-[#167c5a]">
               {check.status}
-            </span>
+            </div>
           </div>
         ))}
       </div>
-
-      <p className="mono-ui mt-auto pt-4 text-[11px] leading-5 uppercase tracking-[0.08em] text-[#0A0A0A]/60">
-        Every transfer walks the same control path before it reaches the ledger
-        engine.
-      </p>
-    </div>
+    </section>
   );
 }
 
