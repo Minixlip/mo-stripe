@@ -1,4 +1,4 @@
-import { processingChecks } from './data';
+import { processingChecks } from '../data';
 
 export function ProcessingChecksPanel() {
   return (

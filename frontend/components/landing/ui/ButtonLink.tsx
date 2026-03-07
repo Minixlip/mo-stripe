@@ -1,4 +1,4 @@
-import type { ButtonLinkProps } from './types';
+import type { ButtonLinkProps } from '../types';
 
 export function ButtonLink({
   children,

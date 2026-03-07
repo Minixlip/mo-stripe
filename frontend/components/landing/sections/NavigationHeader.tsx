@@ -1,6 +1,5 @@
-import { navigationItems } from './data';
-import { ButtonLink } from './ButtonLink';
-import { ArrowRightIcon } from './icons';
+import { navigationItems } from '../data';
+import { ArrowRightIcon, ButtonLink } from '../ui';
 
 export function NavigationHeader() {
   return (

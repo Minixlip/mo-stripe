@@ -1,7 +1,10 @@
-import { techStack } from './data';
-import { ButtonLink } from './ButtonLink';
-import { ArrowUpRightIcon, SquareIcon } from './icons';
-import { SystemArchitecturePanel } from './SystemArchitecturePanel';
+import { techStack } from '../data';
+import {
+  ArrowUpRightIcon,
+  ButtonLink,
+  SquareIcon,
+  SystemArchitecturePanel,
+} from '../ui';
 
 export function HeroColumn() {
   return (

@@ -1,4 +1,4 @@
-import type { EmployerHighlight } from './types';
+import type { EmployerHighlight } from '../types';
 
 export function EmployerHighlightCard({
   index,

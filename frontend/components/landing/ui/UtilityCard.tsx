@@ -1,5 +1,5 @@
 import { ActivityIcon, BranchIcon, DownloadIcon } from './icons';
-import type { UtilityCardData } from './types';
+import type { UtilityCardData } from '../types';
 
 const utilityIcons = {
   activity: ActivityIcon,

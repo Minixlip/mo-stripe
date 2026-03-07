@@ -1,8 +1,5 @@
-import {
-  architectureSignals,
-  employerHighlights,
-} from './data';
-import { EmployerHighlightCard } from './EmployerHighlightCard';
+import { architectureSignals, employerHighlights } from '../data';
+import { EmployerHighlightCard } from '../ui';
 
 export function EngineeringGuarantees() {
   return (

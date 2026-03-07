@@ -1,4 +1,4 @@
-import { architectureLayers, architectureNotes } from './data';
+import { architectureLayers, architectureNotes } from '../data';
 
 export function SystemArchitecturePanel() {
   return (

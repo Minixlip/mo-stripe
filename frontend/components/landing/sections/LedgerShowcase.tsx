@@ -1,13 +1,13 @@
-import { accounts, transactions, utilityCards } from './data';
-import { ButtonLink } from './ButtonLink';
-import { ProcessingChecksPanel } from './ProcessingChecksPanel';
-import { UtilityCard } from './UtilityCard';
+import { accounts, transactions, utilityCards } from '../data';
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
+  ButtonLink,
+  ProcessingChecksPanel,
   ShieldIcon,
   TransferIcon,
-} from './icons';
+  UtilityCard,
+} from '../ui';
 
 export function LedgerShowcase() {
   const rollingTransactions = [...transactions, ...transactions];
