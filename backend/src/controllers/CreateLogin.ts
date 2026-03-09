@@ -1,6 +1,7 @@
 import { type Response, type Request } from 'express';
 import { processLogin } from '../services/login.service.js';
 import { LoginSchema } from '../validators/auth.schema.js';
+import { AUTH_COOKIE_NAME, getAuthCookieOptions } from '../lib/authCookie.js';
 
 export const createLogin = async (req: Request, res: Response) => {
   const safeInput = LoginSchema.safeParse(req.body);
@@ -16,11 +17,7 @@ export const createLogin = async (req: Request, res: Response) => {
   }
 
   if (result.success) {
-    res.cookie('token', result.message, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie(AUTH_COOKIE_NAME, result.message, getAuthCookieOptions());
     return res.status(200).json({ message: 'Successful login' });
   }
 };
