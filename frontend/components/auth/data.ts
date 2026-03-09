@@ -88,11 +88,11 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
     title: 'Provision your operator access.',
     subtitle: 'New account, same control path.',
     description:
-      'Registration follows the same discipline as transfers: payload validation, password hashing, relational writes, and a clean session bootstrap.',
+      'Registration follows the same discipline as transfers: payload validation, password hashing, relational writes, and a clean session bootstrap with an opening GBP balance.',
     panelLabel: 'ACCOUNT SETUP',
     panelMode: 'register flow',
     formHint:
-      'Create the account that will own your dashboard, balances, and transaction views. The schema stays strict from the first write.',
+      'Registration now provisions one personal account automatically and seeds it with 5,000 GBP in demo funds.',
     submitLabel: 'Create account',
     switchPrompt: 'Already have access?',
     switchLabel: 'Sign in',
@@ -143,7 +143,7 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
       {
         step: '04',
         title: 'PostgreSQL / Prisma',
-        note: 'user create + session',
+        note: 'user + account + opening deposit',
       },
     ],
     checks: [
@@ -159,8 +159,8 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
         status: 'sealed',
       },
       {
-        label: 'relational write',
-        detail: 'user persisted',
+        label: 'bootstrap write',
+        detail: 'user and account persisted',
         status: 'committed',
       },
     ],
@@ -169,8 +169,8 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
       { amount: '> zod.safeParse()', label: 'schema_gate', tone: 'default' },
       { amount: '> bcrypt.hash()', label: 'password_sealed', tone: 'default' },
       {
-        amount: '+ prisma.user.create',
-        label: 'relational_write',
+        amount: '+ opening deposit',
+        label: 'account_bootstrap',
         tone: 'accent',
       },
       { amount: '+ jwt issued', label: 'session_bootstrap', tone: 'muted' },

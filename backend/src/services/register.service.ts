@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { prisma } from '../../prisma/client.js';
+import { INITIAL_ACCOUNT_BALANCE_PENCE } from '../lib/account.js';
 import { createAuthToken } from '../lib/authToken.js';
 
 type RegistrationData = {
@@ -29,9 +30,29 @@ export const processRegister = async (
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
-      data: { email: normalizedEmail, password: hashedPassword },
+    const newUser = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: { email: normalizedEmail, password: hashedPassword },
+      });
+
+      const account = await tx.account.create({
+        data: {
+          userId: user.id,
+          balance: INITIAL_ACCOUNT_BALANCE_PENCE,
+        },
+      });
+
+      await tx.transaction.create({
+        data: {
+          amount: INITIAL_ACCOUNT_BALANCE_PENCE,
+          type: 'DEPOSIT',
+          toAccountId: account.id,
+        },
+      });
+
+      return user;
     });
+
     const token = createAuthToken(newUser.id);
 
     return { success: true, token };

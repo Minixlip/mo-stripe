@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { prisma } from './client.js';
+import { INITIAL_ACCOUNT_BALANCE_PENCE } from '../src/lib/account.js';
 
 const users = [
   { email: 'Mohammedshihab6969@gmail.com', password: 'Chicken123!' },
@@ -11,10 +12,39 @@ async function seed() {
     users.map(async ({ email, password }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await prisma.user.upsert({
+      const user = await prisma.user.upsert({
         where: { email },
         update: { password: hashedPassword },
         create: { email, password: hashedPassword },
+      });
+
+      const existingAccount = await prisma.account.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (existingAccount) {
+        await prisma.account.update({
+          where: { id: existingAccount.id },
+          data: { balance: INITIAL_ACCOUNT_BALANCE_PENCE },
+        });
+        return;
+      }
+
+      await prisma.$transaction(async (tx) => {
+        const account = await tx.account.create({
+          data: {
+            userId: user.id,
+            balance: INITIAL_ACCOUNT_BALANCE_PENCE,
+          },
+        });
+
+        await tx.transaction.create({
+          data: {
+            amount: INITIAL_ACCOUNT_BALANCE_PENCE,
+            type: 'DEPOSIT',
+            toAccountId: account.id,
+          },
+        });
       });
     }),
   );

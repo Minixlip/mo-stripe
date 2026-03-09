@@ -12,11 +12,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum AccountType {
-  PERSONAL
-  BUSINESS
-}
-
 enum TransactionType {
   DEPOSIT
   WITHDRAWAL
@@ -29,17 +24,16 @@ model User {
   password  String
   createdAt DateTime @default(now())
 
-  accounts  Account[]
+  account   Account?
 }
 
 model Account {
   id        String   @id @default(uuid())
-  type      AccountType
   balance   Int      @default(0)
   createdAt DateTime @default(now())
 
-  userId String
-  user   User @relation(fields: [userId], references: [id])
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   transactionsFrom Transaction[] @relation("FromAccount")
   transactionsTo   Transaction[] @relation("ToAccount")
