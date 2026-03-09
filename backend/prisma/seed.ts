@@ -2,8 +2,8 @@ import bcrypt from 'bcrypt';
 import { prisma } from './client.js';
 
 const users = [
-  { email: 'Mohammedshihab6969@gmail.com', password: 'chicken123' },
-  { email: 'Mohammedshihab6868@gmail.com', password: 'chicken123' },
+  { email: 'Mohammedshihab6969@gmail.com', password: 'Chicken123!' },
+  { email: 'Mohammedshihab6868@gmail.com', password: 'Chicken123!' },
 ];
 
 async function seed() {

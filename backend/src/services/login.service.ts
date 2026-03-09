@@ -35,14 +35,13 @@ export const processLogin = async (data: LoginData) => {
       time: findUser.createdAt,
       userId: findUser.id,
     };
-    const token = jwt.sign(tokenData, jwtSecretKey);
+    const token = jwt.sign(tokenData, jwtSecretKey, { expiresIn: '31d' });
 
     return { success: true, message: token };
   } catch (error) {
     return {
       success: false,
-      message:
-        error instanceof Error ? error.message : 'INTERNAL_SERVER_ERROR',
+      message: error instanceof Error ? error.message : 'INTERNAL_SERVER_ERROR',
     };
   }
 };

@@ -16,8 +16,11 @@ export const createLogin = async (req: Request, res: Response) => {
   }
 
   if (result.success) {
-    return res
-      .status(200)
-      .json({ message: 'Successful login', token: result.message });
+    res.cookie('token', result.message, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+    return res.status(200).json({ message: 'Successful login' });
   }
 };

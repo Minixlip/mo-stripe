@@ -24,9 +24,9 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
         name: 'email',
         label: 'Operator email',
         type: 'email',
-        placeholder: 'ledger@mo-stripe.dev',
+        placeholder: 'John@gmail.com',
         autoComplete: 'email',
-        helper: 'Primary identity used for session issue.',
+        helper: '',
       },
       {
         name: 'password',
@@ -34,7 +34,7 @@ export const authContentByMode: Record<AuthMode, AuthContent> = {
         type: 'password',
         placeholder: 'Enter your password',
         autoComplete: 'current-password',
-        helper: 'Compared against the stored bcrypt hash.',
+        helper: '',
       },
     ],
     flowSteps: [

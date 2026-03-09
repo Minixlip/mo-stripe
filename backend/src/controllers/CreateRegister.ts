@@ -18,6 +18,11 @@ export const createRegister = async (req: Request, res: Response) => {
   const result = await processRegister(safeInput.data);
 
   if (result?.sucess) {
+    res.cookie('token', result.message, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
     return res.status(200).json({ message: result.message });
   } else {
     return res.status(400).json({ message: result?.message });

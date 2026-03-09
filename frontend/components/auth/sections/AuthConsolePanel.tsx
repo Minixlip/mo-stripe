@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import type { AuthContent } from '../types';
-import { AuthField, AuthUtilityCard } from '../ui';
+import type { AuthContent, AuthMode } from '../types';
+import { AuthForm, AuthUtilityCard } from '../ui';
 
 type AuthConsolePanelProps = {
   content: AuthContent;
+  mode: AuthMode;
 };
 
-export function AuthConsolePanel({ content }: AuthConsolePanelProps) {
+export function AuthConsolePanel({ content, mode }: AuthConsolePanelProps) {
   const rollingTrace = [...content.traceEvents, ...content.traceEvents];
 
   return (
@@ -35,40 +36,10 @@ export function AuthConsolePanel({ content }: AuthConsolePanelProps) {
               {content.formHint}
             </p>
 
-            <form
-              action="#"
-              className="mt-5 space-y-5"
-            >
-              {content.fields.map((field) => (
-                <AuthField
-                  key={field.name}
-                  field={field}
-                />
-              ))}
-
-              <div className="flex flex-wrap items-center justify-between gap-3 border-y border-[#0A0A0A] py-3">
-                <label className="flex items-center gap-3 text-[14px] text-[#0A0A0A]/68">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded-none border border-[#0A0A0A] accent-[#C7F000]"
-                  />
-                  <span>{content.consentLabel}</span>
-                </label>
-                <Link
-                  href={content.auxiliaryHref}
-                  className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A] underline underline-offset-4"
-                >
-                  {content.auxiliaryLabel}
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                className="key-press mono-ui inline-flex w-full items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-4 py-3 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A]"
-              >
-                {content.submitLabel}
-              </button>
-            </form>
+            <AuthForm
+              content={content}
+              mode={mode}
+            />
 
             <div className="mono-ui mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#0A0A0A] pt-4 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/65">
               <span>{content.switchPrompt}</span>
@@ -85,7 +56,9 @@ export function AuthConsolePanel({ content }: AuthConsolePanelProps) {
         <div className="p-4">
           <div className="mono-ui mb-4 flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
             <span className="text-[#0A0A0A]/80">SESSION TRACE</span>
-            <span className="text-[#0A0A0A]/80">checks: {content.checks.length}</span>
+            <span className="text-[#0A0A0A]/80">
+              checks: {content.checks.length}
+            </span>
           </div>
 
           <div className="overflow-hidden border border-[#0A0A0A] bg-[#F4F3EF]/80">

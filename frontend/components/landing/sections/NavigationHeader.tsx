@@ -37,7 +37,7 @@ export function NavigationHeader() {
           Sign in
         </ButtonLink>
         <ButtonLink
-          href="/register"
+          href="/account"
           icon={<ArrowRightIcon className="h-3.5 w-3.5" />}
         >
           Access Ledger
