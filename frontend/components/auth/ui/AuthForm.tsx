@@ -48,7 +48,6 @@ export function AuthForm({ content, mode }: AuthFormProps) {
             password: formData.get('password'),
           }
         : {
-            name: formData.get('name'),
             email: formData.get('email'),
             password: formData.get('password'),
             confirmPassword: formData.get('confirmPassword'),

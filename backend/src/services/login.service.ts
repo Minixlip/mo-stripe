@@ -1,47 +1,58 @@
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { prisma } from '../../prisma/client.js';
+import { createAuthToken } from '../lib/authToken.js';
 
 type LoginData = {
   email: string;
   password: string;
 };
 
-export const processLogin = async (data: LoginData) => {
-  const { email, password } = data;
+type LoginResult =
+  | {
+      success: true;
+      token: string;
+    }
+  | {
+      success: false;
+      statusCode: number;
+      message: string;
+    };
 
-  const jwtSecretKey = process.env.JWT_SECRET_KEY;
+export const processLogin = async (data: LoginData): Promise<LoginResult> => {
+  const { email, password } = data;
+  const normalizedEmail = email.trim().toLowerCase();
 
   try {
-    if (!jwtSecretKey) {
-      throw new Error('JWT_SECRET_KEY is missing.');
-    }
-
     const findUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (!findUser) {
-      throw new Error('Invalid email or password.');
+      return {
+        success: false,
+        statusCode: 401,
+        message: 'Invalid email or password.',
+      };
     }
 
     const passwordMatches = await bcrypt.compare(password, findUser.password);
 
     if (!passwordMatches) {
-      throw new Error('Invalid email or password.');
+      return {
+        success: false,
+        statusCode: 401,
+        message: 'Invalid email or password.',
+      };
     }
 
-    const tokenData = {
-      time: findUser.createdAt,
-      userId: findUser.id,
-    };
-    const token = jwt.sign(tokenData, jwtSecretKey, { expiresIn: '31d' });
+    const token = createAuthToken(findUser.id);
 
-    return { success: true, message: token };
-  } catch (error) {
+    return { success: true, token };
+  } catch {
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'INTERNAL_SERVER_ERROR',
+      statusCode: 500,
+      message: 'Unable to log in.',
     };
   }
 };

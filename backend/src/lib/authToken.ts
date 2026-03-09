@@ -6,14 +6,26 @@ export type AuthTokenPayload = {
   exp?: number;
 };
 
-export function verifyAuthToken(token: string): AuthTokenPayload {
+const AUTH_TOKEN_TTL = '31d';
+
+function getJwtSecretKey() {
   const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
   if (!jwtSecretKey) {
     throw new Error('JWT_SECRET_KEY is missing.');
   }
 
-  const payload = jwt.verify(token, jwtSecretKey);
+  return jwtSecretKey;
+}
+
+export function createAuthToken(userId: string) {
+  return jwt.sign({ userId }, getJwtSecretKey(), {
+    expiresIn: AUTH_TOKEN_TTL,
+  });
+}
+
+export function verifyAuthToken(token: string): AuthTokenPayload {
+  const payload = jwt.verify(token, getJwtSecretKey());
 
   if (
     typeof payload !== 'object' ||
