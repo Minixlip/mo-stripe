@@ -3,6 +3,7 @@ import 'dotenv/config';
 import loginRoute from './routes/login.routes.js';
 import logoutRoute from './routes/logout.routes.js';
 import registerRoute from './routes/register.routes.js';
+import sessionRoute from './routes/session.routes.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 const app = express();
@@ -26,6 +27,9 @@ app.use('/register', registerRoute);
 
 // logout route
 app.use('/logout', logoutRoute);
+
+// session route
+app.use('/session', sessionRoute);
 
 // listener
 app.listen(PORT, () => {

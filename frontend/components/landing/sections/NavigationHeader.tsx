@@ -1,8 +1,12 @@
 import Link from 'next/link';
+import { LogoutButton } from '@/components/account/LogoutButton';
+import { getCurrentSession } from '@/lib/auth/session';
 import { navigationItems } from '../data';
 import { ArrowRightIcon, ButtonLink } from '../ui';
 
-export function NavigationHeader() {
+export async function NavigationHeader() {
+  const session = await getCurrentSession();
+
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border border-[#0A0A0A] bg-[rgba(255,255,255,0.62)] px-4 py-4 backdrop-blur-[2px]">
       <Link
@@ -30,18 +34,38 @@ export function NavigationHeader() {
       </nav>
 
       <div className="flex flex-wrap items-center gap-3">
-        <ButtonLink
-          href="/login"
-          variant="secondary"
-        >
-          Sign in
-        </ButtonLink>
-        <ButtonLink
-          href="/account"
-          icon={<ArrowRightIcon className="h-3.5 w-3.5" />}
-        >
-          Access Ledger
-        </ButtonLink>
+        {session ? (
+          <>
+            <div className="mono-ui flex max-w-[18rem] items-center gap-3 border border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]">
+              <span className="text-[#0A0A0A]/55">operator</span>
+              <span className="truncate text-[12px] normal-case tracking-normal">
+                {session.email}
+              </span>
+            </div>
+            <ButtonLink
+              href="/account"
+              icon={<ArrowRightIcon className="h-3.5 w-3.5" />}
+            >
+              Access Ledger
+            </ButtonLink>
+            <LogoutButton compact />
+          </>
+        ) : (
+          <>
+            <ButtonLink
+              href="/login"
+              variant="secondary"
+            >
+              Sign in
+            </ButtonLink>
+            <ButtonLink
+              href="/account"
+              icon={<ArrowRightIcon className="h-3.5 w-3.5" />}
+            >
+              Access Ledger
+            </ButtonLink>
+          </>
+        )}
       </div>
     </header>
   );

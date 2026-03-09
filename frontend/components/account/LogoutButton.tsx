@@ -5,7 +5,11 @@ import { useState, useTransition } from 'react';
 
 const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+  compact?: boolean;
+};
+
+export function LogoutButton({ compact = false }: LogoutButtonProps) {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -39,13 +43,25 @@ export function LogoutButton() {
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="key-press mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-4 py-3 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-70"
+        className={
+          compact
+            ? 'mono-ui inline-flex items-center justify-center border border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A] transition-colors duration-150 hover:bg-[#FFFFFF] disabled:cursor-not-allowed disabled:opacity-70'
+            : 'key-press mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-4 py-3 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-70'
+        }
       >
         {isPending ? 'Signing out...' : 'Sign out'}
       </button>
 
       {errorMessage ? (
-        <p className="text-[14px] leading-6 text-[#0A0A0A]/68">{errorMessage}</p>
+        <p
+          className={
+            compact
+              ? 'max-w-[14rem] text-[12px] leading-5 text-[#0A0A0A]/68'
+              : 'text-[14px] leading-6 text-[#0A0A0A]/68'
+          }
+        >
+          {errorMessage}
+        </p>
       ) : null}
     </div>
   );

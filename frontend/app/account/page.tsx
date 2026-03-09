@@ -1,8 +1,7 @@
-import { LogoutButton } from '@/components/account/LogoutButton';
 import { requireAuthenticatedSession } from '@/lib/auth/session';
 
 export default async function Account() {
-  await requireAuthenticatedSession();
+  const session = await requireAuthenticatedSession();
 
   return (
     <div className="page-surface min-h-screen">
@@ -23,14 +22,12 @@ export default async function Account() {
                   Session established, route unlocked.
                 </p>
                 <p className="max-w-[34rem] text-[18px] leading-8 text-[#0A0A0A]/55">
-                  This page is only reachable when the session cookie exists. The
-                  frontend is no longer verifying the JWT itself; the future
-                  backend session-check endpoint will become the source of truth
-                  for protected account data.
+                  This page is only reachable when the backend verifies the
+                  session cookie and resolves the authenticated operator. The
+                  shared navbar now reads that trusted session state and exposes
+                  the active email for <span className="font-medium">{session.email}</span>.
                 </p>
               </div>
-
-              <LogoutButton />
             </div>
 
             <section className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]">
@@ -71,9 +68,9 @@ export default async function Account() {
                     Ownership
                   </div>
                   <div className="mt-4 text-[15px] leading-7 text-[#0A0A0A]/68">
-                    Next only checks whether the backend cookie is present so it
-                    can gate the route. Token verification and account identity
-                    stay with the backend.
+                    Next asks the backend to validate the cookie before it
+                    treats the session as authenticated. Token verification and
+                    account identity stay with the backend.
                   </div>
                 </div>
 
@@ -83,8 +80,9 @@ export default async function Account() {
                   </div>
                   <div className="mt-4 text-[15px] leading-7 text-[#0A0A0A]/68">
                     Missing session cookies are redirected to `/login` before the
-                    account surface renders. Invalid-token handling will move to
-                    your backend session-check endpoint.
+                    account surface renders. Invalid tokens now fail at the
+                    backend session endpoint instead of being treated as a valid
+                    frontend session.
                   </div>
                 </div>
               </div>
