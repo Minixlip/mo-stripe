@@ -1,10 +1,7 @@
 import 'server-only';
 
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
-const AUTH_COOKIE_NAME = 'token';
-const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
+import { AUTH_API_URL, getAuthenticatedApiHeaders } from './backend';
 
 type CurrentSession = {
   email: string;
@@ -19,18 +16,15 @@ function isCurrentSession(payload: unknown): payload is CurrentSession {
 }
 
 export async function getCurrentSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value ?? null;
+  const headers = await getAuthenticatedApiHeaders();
 
-  if (!token) {
+  if (!headers) {
     return null;
   }
 
   try {
     const response = await fetch(`${AUTH_API_URL}/session`, {
-      headers: {
-        Cookie: `${AUTH_COOKIE_NAME}=${token}`,
-      },
+      headers,
       cache: 'no-store',
     });
 

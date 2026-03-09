@@ -1,5 +1,6 @@
 import express from 'express';
 import 'dotenv/config';
+import accountRoute from './routes/account.routes.js';
 import loginRoute from './routes/login.routes.js';
 import logoutRoute from './routes/logout.routes.js';
 import registerRoute from './routes/register.routes.js';
@@ -30,6 +31,9 @@ app.use('/logout', logoutRoute);
 
 // session route
 app.use('/session', sessionRoute);
+
+// account route
+app.use('/account', accountRoute);
 
 // listener
 app.listen(PORT, () => {
