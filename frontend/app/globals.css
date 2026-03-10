@@ -3,6 +3,8 @@
 :root {
   --background: #f4f3ef;
   --foreground: #0a0a0a;
+  --font-manrope: "Manrope Variable";
+  --font-jetbrains-mono: "JetBrains Mono Variable";
 }
 
 @theme inline {

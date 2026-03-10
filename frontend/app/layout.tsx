@@ -1,17 +1,8 @@
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/manrope';
 import type { Metadata } from 'next';
-import { JetBrains_Mono, Manrope } from 'next/font/google';
 import './globals.css';
 import { NavigationHeader } from '@/components/landing';
-
-const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets: ['latin'],
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'mo-stripe | The Ledger',
@@ -25,9 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${manrope.variable} ${jetBrainsMono.variable} font-sans antialiased`}
-      >
+      <body className="font-sans antialiased">
         <NavigationHeader />
         {children}
       </body>
