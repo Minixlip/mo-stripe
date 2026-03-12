@@ -227,7 +227,6 @@ mo-stripe/
 
 - No automated test suite yet
 - No refresh-token or token-revocation strategy
-- No full ledger posting model yet
 - No reversal or reconciliation workflows yet
 - No multi-account or business-entity model yet
 
@@ -236,7 +235,7 @@ mo-stripe/
 The next meaningful upgrades would be:
 
 1. integration tests around overdraft prevention, transaction ownership, and transfer atomicity
-2. a ledger-style posting model with append-only entries
+2. deriving balances entirely from append-only ledger postings
 3. compensating entries for reversals and refunds
 4. more formal account/entity ownership models for business use cases
 5. stronger session revocation and refresh-token architecture

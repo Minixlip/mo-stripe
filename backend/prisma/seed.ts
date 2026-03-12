@@ -38,11 +38,23 @@ async function seed() {
           },
         });
 
-        await tx.transaction.create({
+        const openingTransaction = await tx.transaction.create({
           data: {
             amount: INITIAL_ACCOUNT_BALANCE_PENCE,
             type: 'DEPOSIT',
             toAccountId: account.id,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        await tx.ledgerPosting.create({
+          data: {
+            transactionId: openingTransaction.id,
+            accountId: account.id,
+            amount: INITIAL_ACCOUNT_BALANCE_PENCE,
+            direction: 'CREDIT',
           },
         });
       });

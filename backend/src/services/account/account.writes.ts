@@ -80,11 +80,23 @@ async function executeDeposit(
     select: { balance: true },
   });
 
-  await tx.transaction.create({
+  const transaction = await tx.transaction.create({
     data: {
       amount,
       type: 'DEPOSIT',
       toAccountId: account.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await tx.ledgerPosting.create({
+    data: {
+      transactionId: transaction.id,
+      accountId: account.id,
+      amount,
+      direction: 'CREDIT',
     },
   });
 
@@ -144,11 +156,23 @@ async function executeWithdrawal(
     throw new Error('ACCOUNT_BALANCE_LOOKUP_FAILED');
   }
 
-  await tx.transaction.create({
+  const transaction = await tx.transaction.create({
     data: {
       amount,
       type: 'WITHDRAWAL',
       fromAccountId: account.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  await tx.ledgerPosting.create({
+    data: {
+      transactionId: transaction.id,
+      accountId: account.id,
+      amount,
+      direction: 'DEBIT',
     },
   });
 
@@ -245,13 +269,33 @@ async function executeTransfer(
     throw new Error('ACCOUNT_BALANCE_LOOKUP_FAILED');
   }
 
-  await tx.transaction.create({
+  const transaction = await tx.transaction.create({
     data: {
       amount: input.amount,
       type: 'TRANSFER',
       fromAccountId: senderAccount.id,
       toAccountId: recipientAccount.id,
     },
+    select: {
+      id: true,
+    },
+  });
+
+  await tx.ledgerPosting.createMany({
+    data: [
+      {
+        transactionId: transaction.id,
+        accountId: senderAccount.id,
+        amount: input.amount,
+        direction: 'DEBIT',
+      },
+      {
+        transactionId: transaction.id,
+        accountId: recipientAccount.id,
+        amount: input.amount,
+        direction: 'CREDIT',
+      },
+    ],
   });
 
   return {

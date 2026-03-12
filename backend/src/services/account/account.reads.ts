@@ -6,8 +6,9 @@ import type {
   AccountTransactionsResult,
 } from './account.types.js';
 import {
-  accountTransactionSelect,
   buildMonthlyStatementSummary,
+  getAccountTransactionDetailSelect,
+  getAccountTransactionSelect,
   getMonthRange,
   getNetBalanceEffect,
   getUserAccount,
@@ -33,11 +34,15 @@ export const getAccountOverview = async (
 
     const transactions = await prisma.transaction.findMany({
       where: {
-        OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+        ledgerPostings: {
+          some: {
+            accountId: account.id,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       take: 14,
-      select: accountTransactionSelect,
+      select: getAccountTransactionSelect(account.id),
     });
 
     return {
@@ -74,11 +79,15 @@ export const getAccountTransactions = async (
 
     const transactions = await prisma.transaction.findMany({
       where: {
-        OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+        ledgerPostings: {
+          some: {
+            accountId: account.id,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
-      select: accountTransactionSelect,
+      select: getAccountTransactionSelect(account.id),
     });
 
     return {
@@ -114,9 +123,13 @@ export const getAccountTransactionDetail = async (
     const transaction = await prisma.transaction.findFirst({
       where: {
         id: transactionId,
-        OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+        ledgerPostings: {
+          some: {
+            accountId: account.id,
+          },
+        },
       },
-      select: accountTransactionSelect,
+      select: getAccountTransactionDetailSelect(account.id),
     });
 
     if (!transaction) {
@@ -162,18 +175,22 @@ export const getAccountMonthlyStatement = async (
     const [monthTransactions, laterTransactions] = await prisma.$transaction([
       prisma.transaction.findMany({
         where: {
-          OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+          ledgerPostings: {
+            some: {
+              accountId: account.id,
+            },
+          },
           createdAt: {
             gte: periodStart,
             lt: periodEndExclusive,
           },
         },
         orderBy: { createdAt: 'asc' },
-        select: accountTransactionSelect,
+        select: getAccountTransactionDetailSelect(account.id),
       }),
-      prisma.transaction.findMany({
+      prisma.ledgerPosting.findMany({
         where: {
-          OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+          accountId: account.id,
           createdAt: {
             gte: periodEndExclusive,
           },
@@ -181,8 +198,7 @@ export const getAccountMonthlyStatement = async (
         orderBy: { createdAt: 'asc' },
         select: {
           amount: true,
-          fromAccountId: true,
-          toAccountId: true,
+          direction: true,
         },
       }),
     ]);
@@ -190,9 +206,13 @@ export const getAccountMonthlyStatement = async (
     const statementTransactions = monthTransactions.map((transaction) =>
       mapTransactionDetail(account.id, transaction),
     );
-    const laterNetEffect = getNetBalanceEffect(account.id, laterTransactions);
+    const laterNetEffect = getNetBalanceEffect(laterTransactions);
     const closingBalance = account.balance - laterNetEffect;
-    const monthNetEffect = getNetBalanceEffect(account.id, monthTransactions);
+    const monthNetEffect = statementTransactions.reduce(
+      (total, transaction) =>
+        total + (transaction.incoming ? transaction.amount : -transaction.amount),
+      0,
+    );
     const openingBalance = closingBalance - monthNetEffect;
 
     return {

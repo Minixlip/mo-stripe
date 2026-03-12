@@ -46,7 +46,26 @@ function isAccountTransactionDetailPayload(
     (typeof record.counterpartyEmail === 'string' ||
       record.counterpartyEmail === null) &&
     (typeof record.fromAccountId === 'string' || record.fromAccountId === null) &&
-    (typeof record.toAccountId === 'string' || record.toAccountId === null)
+    (typeof record.toAccountId === 'string' || record.toAccountId === null) &&
+    Array.isArray(record.ledgerPostings) &&
+    record.ledgerPostings.every((posting) => {
+      if (typeof posting !== 'object' || posting === null) {
+        return false;
+      }
+
+      const postingRecord = posting as Record<string, unknown>;
+
+      return (
+        typeof postingRecord.id === 'string' &&
+        typeof postingRecord.accountId === 'string' &&
+        typeof postingRecord.amount === 'number' &&
+        (postingRecord.direction === 'DEBIT' ||
+          postingRecord.direction === 'CREDIT') &&
+        typeof postingRecord.createdAt === 'string' &&
+        (typeof postingRecord.accountOwnerEmail === 'string' ||
+          postingRecord.accountOwnerEmail === null)
+      );
+    })
   );
 }
 
@@ -232,6 +251,48 @@ export function AccountTransactionDetailModal({
               <div className="mono-ui mt-4 text-[1rem] font-medium tracking-[-0.04em] text-[#0A0A0A]">
                 {maskAccountId(transaction.toAccountId)}
               </div>
+            </div>
+          </section>
+
+          <section className="border border-[#0A0A0A] bg-[#FFFFFF]/62">
+            <div className="mono-ui flex items-center justify-between gap-3 border-b border-[#0A0A0A] px-4 py-4 text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/58">
+              <span>Ledger postings</span>
+              <span>{transaction.ledgerPostings.length}</span>
+            </div>
+
+            <div className="space-y-3 p-4">
+              {transaction.ledgerPostings.map((posting) => (
+                <div
+                  key={posting.id}
+                  className="border border-[#0A0A0A] bg-[#F4F3EF]/82 px-4 py-4"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="space-y-2">
+                      <div className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/52">
+                        {posting.direction}
+                      </div>
+                      <div className="mono-ui text-[12px] uppercase tracking-[0.1em] text-[#0A0A0A]/72">
+                        {posting.accountOwnerEmail ?? 'current ledger'} /{' '}
+                        {maskAccountId(posting.accountId)}
+                      </div>
+                    </div>
+
+                    <div
+                      className={[
+                        'mono-ui ledger-value text-[1rem] font-medium tracking-[-0.04em]',
+                        posting.direction === 'CREDIT'
+                          ? 'text-[#167c5a]'
+                          : 'text-[#0A0A0A]',
+                      ].join(' ')}
+                    >
+                      {formatSignedCurrencyFromPence(
+                        posting.amount,
+                        posting.direction === 'CREDIT',
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 

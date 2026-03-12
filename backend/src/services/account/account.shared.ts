@@ -1,38 +1,124 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../../prisma/client.js';
 import type {
   ActivityItem,
   BalanceEffectRecord,
   MonthlyStatementSummary,
   TransactionDetailItem,
+  TransactionDetailRecord,
   TransactionRecord,
 } from './account.types.js';
 
-export const accountTransactionSelect = {
-  id: true,
-  amount: true,
-  type: true,
-  fromAccountId: true,
-  toAccountId: true,
-  createdAt: true,
-  fromAccount: {
-    select: {
-      user: {
-        select: {
-          email: true,
+function getOwnedLedgerPosting(
+  accountId: string,
+  transaction: TransactionRecord,
+) {
+  const ownedLedgerPosting = transaction.ledgerPostings.find(
+    (posting) => posting.accountId === accountId,
+  );
+
+  if (!ownedLedgerPosting) {
+    throw new Error('OWNED_LEDGER_POSTING_NOT_FOUND');
+  }
+
+  return ownedLedgerPosting;
+}
+
+export function getAccountTransactionSelect(accountId: string) {
+  return Prisma.validator<Prisma.TransactionSelect>()({
+    id: true,
+    amount: true,
+    type: true,
+    fromAccountId: true,
+    toAccountId: true,
+    createdAt: true,
+    fromAccount: {
+      select: {
+        user: {
+          select: {
+            email: true,
+          },
         },
       },
     },
-  },
-  toAccount: {
-    select: {
-      user: {
-        select: {
-          email: true,
+    toAccount: {
+      select: {
+        user: {
+          select: {
+            email: true,
+          },
         },
       },
     },
-  },
-} as const;
+    ledgerPostings: {
+      where: {
+        accountId,
+      },
+      select: {
+        id: true,
+        accountId: true,
+        amount: true,
+        direction: true,
+        createdAt: true,
+      },
+    },
+  });
+}
+
+export function getAccountTransactionDetailSelect(accountId: string) {
+  return Prisma.validator<Prisma.TransactionSelect>()({
+    id: true,
+    amount: true,
+    type: true,
+    fromAccountId: true,
+    toAccountId: true,
+    createdAt: true,
+    fromAccount: {
+      select: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    },
+    toAccount: {
+      select: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    },
+    ledgerPostings: {
+      select: {
+        id: true,
+        accountId: true,
+        amount: true,
+        direction: true,
+        createdAt: true,
+        account: {
+          select: {
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        {
+          direction: 'asc',
+        },
+        {
+          createdAt: 'asc',
+        },
+      ] as Prisma.LedgerPostingOrderByWithRelationInput[],
+    },
+  });
+}
 
 export async function getUserAccount(userId: string) {
   return prisma.account.findUnique({
@@ -58,24 +144,28 @@ export function mapTransactionActivity(
   accountId: string,
   transactions: TransactionRecord[],
 ): ActivityItem[] {
-  return transactions.map((transaction) => ({
-    id: transaction.id,
-    amount: transaction.amount,
-    type: transaction.type,
-    incoming: transaction.toAccountId === accountId,
-    systemGenerated:
-      transaction.fromAccountId === null || transaction.toAccountId === null,
-    createdAt: transaction.createdAt,
-    counterpartyEmail:
-      transaction.toAccountId === accountId
+  return transactions.map((transaction) => {
+    const ownedLedgerPosting = getOwnedLedgerPosting(accountId, transaction);
+    const incoming = ownedLedgerPosting.direction === 'CREDIT';
+
+    return {
+      id: transaction.id,
+      amount: ownedLedgerPosting.amount,
+      type: transaction.type,
+      incoming,
+      systemGenerated:
+        transaction.fromAccountId === null || transaction.toAccountId === null,
+      createdAt: transaction.createdAt,
+      counterpartyEmail: incoming
         ? transaction.fromAccount?.user.email ?? null
         : transaction.toAccount?.user.email ?? null,
-  }));
+    };
+  });
 }
 
 export function mapTransactionDetail(
   accountId: string,
-  transaction: TransactionRecord,
+  transaction: TransactionDetailRecord,
 ): TransactionDetailItem {
   const activity = mapTransactionActivity(accountId, [transaction])[0];
 
@@ -93,6 +183,14 @@ export function mapTransactionDetail(
     counterpartyEmail: activity.counterpartyEmail,
     fromAccountId: transaction.fromAccountId,
     toAccountId: transaction.toAccountId,
+    ledgerPostings: transaction.ledgerPostings.map((posting) => ({
+      id: posting.id,
+      accountId: posting.accountId,
+      amount: posting.amount,
+      direction: posting.direction,
+      createdAt: posting.createdAt,
+      accountOwnerEmail: posting.account.user.email || null,
+    })),
   };
 }
 
@@ -112,11 +210,10 @@ export function getMonthRange(month: string) {
 }
 
 export function getNetBalanceEffect(
-  accountId: string,
   transactions: BalanceEffectRecord[],
 ) {
   return transactions.reduce((total, transaction) => {
-    if (transaction.toAccountId === accountId) {
+    if (transaction.direction === 'CREDIT') {
       return total + transaction.amount;
     }
 

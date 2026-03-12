@@ -8,6 +8,20 @@ export type ActivityItem = {
   counterpartyEmail: string | null;
 };
 
+export type LedgerPostingDirection = 'DEBIT' | 'CREDIT';
+
+export type OwnedLedgerPostingRecord = {
+  id: string;
+  accountId: string;
+  amount: number;
+  direction: LedgerPostingDirection;
+  createdAt: Date;
+};
+
+export type LedgerPostingRecord = OwnedLedgerPostingRecord & {
+  account: { user: { email: string } };
+};
+
 export type TransactionRecord = {
   id: string;
   amount: number;
@@ -17,17 +31,29 @@ export type TransactionRecord = {
   createdAt: Date;
   fromAccount: { user: { email: string } } | null;
   toAccount: { user: { email: string } } | null;
+  ledgerPostings: OwnedLedgerPostingRecord[];
+};
+
+export type TransactionDetailRecord = Omit<TransactionRecord, 'ledgerPostings'> & {
+  ledgerPostings: LedgerPostingRecord[];
 };
 
 export type TransactionDetailItem = ActivityItem & {
   fromAccountId: string | null;
   toAccountId: string | null;
+  ledgerPostings: Array<{
+    id: string;
+    accountId: string;
+    amount: number;
+    direction: LedgerPostingDirection;
+    createdAt: Date;
+    accountOwnerEmail: string | null;
+  }>;
 };
 
 export type BalanceEffectRecord = {
   amount: number;
-  fromAccountId: string | null;
-  toAccountId: string | null;
+  direction: LedgerPostingDirection;
 };
 
 export type MonthlyStatementSummary = {

@@ -12,9 +12,19 @@ export type AccountActivityEntry = {
   counterpartyEmail: string | null;
 };
 
+export type AccountLedgerPosting = {
+  id: string;
+  accountId: string;
+  amount: number;
+  direction: 'DEBIT' | 'CREDIT';
+  createdAt: string;
+  accountOwnerEmail: string | null;
+};
+
 export type AccountTransactionDetail = AccountActivityEntry & {
   fromAccountId: string | null;
   toAccountId: string | null;
+  ledgerPostings: AccountLedgerPosting[];
 };
 
 export type AccountMonthlyStatement = {
@@ -100,7 +110,25 @@ function isAccountTransactionDetail(
   return (
     (typeof transaction.fromAccountId === 'string' ||
       transaction.fromAccountId === null) &&
-    (typeof transaction.toAccountId === 'string' || transaction.toAccountId === null)
+    (typeof transaction.toAccountId === 'string' || transaction.toAccountId === null) &&
+    Array.isArray(transaction.ledgerPostings) &&
+    transaction.ledgerPostings.every((posting) => {
+      if (typeof posting !== 'object' || posting === null) {
+        return false;
+      }
+
+      const record = posting as Record<string, unknown>;
+
+      return (
+        typeof record.id === 'string' &&
+        typeof record.accountId === 'string' &&
+        typeof record.amount === 'number' &&
+        (record.direction === 'DEBIT' || record.direction === 'CREDIT') &&
+        typeof record.createdAt === 'string' &&
+        (typeof record.accountOwnerEmail === 'string' ||
+          record.accountOwnerEmail === null)
+      );
+    })
   );
 }
 

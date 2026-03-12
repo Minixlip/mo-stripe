@@ -108,7 +108,7 @@ export const scopeNotes = [
   {
     label: 'Tradeoff',
     detail:
-      'It is not a full banking core yet. Multi-account structures, business ownership models, and true ledger postings are future steps.',
+      'It is not a full banking core yet. The app now writes append-only ledger postings, but business ownership models, reversals, and balance derivation purely from postings are still future steps.',
   },
 ] as const;
 
@@ -241,7 +241,7 @@ export const roadmapItems = [
   {
     title: 'Ledger-style postings',
     detail:
-      'A more mature design would separate account balance snapshots from append-only debit and credit entries.',
+      'Each money movement now writes append-only debit and credit posting rows alongside the business transaction. A stronger next step would be deriving balances solely from those postings.',
   },
   {
     title: 'Automated tests',
