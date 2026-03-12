@@ -46,7 +46,7 @@ export const architectureNotes: ArchitectureNote[] = [
 
 export const processingChecks: ProcessingCheck[] = [
   { label: 'schema validation', detail: 'Zod contract', status: 'pass' },
-  { label: 'idempotency key', detail: 'retry safe', status: 'locked' },
+  { label: 'idempotency key', detail: 'retry safe', status: 'pass' },
   { label: 'posting rules', detail: 'debit = credit', status: 'balanced' },
   { label: 'audit write', detail: 'append only', status: 'logged' },
 ];

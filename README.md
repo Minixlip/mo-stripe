@@ -10,7 +10,7 @@ The purpose of the project is not only to build a polished interface, but to lea
 - audit-friendly transaction history
 - explicit tradeoffs and roadmap thinking
 
-The project currently supports one personal account per user, cookie-backed authentication, account bootstrap on registration, deposits, withdrawals, transfers, transaction history, and transaction detail inspection.
+The project currently supports one personal account per user, cookie-backed authentication, account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, and transaction detail inspection.
 
 ## What This Project Demonstrates
 
@@ -19,6 +19,7 @@ The project currently supports one personal account per user, cookie-backed auth
 - balances stored in integer pence rather than floating point values
 - overdraft prevention on withdrawals
 - atomic transfer execution using Prisma database transactions
+- idempotency-key protection for retry-safe financial writes
 - opening balances recorded as real transactions so balance and history stay aligned
 - a Next.js dashboard that reads backend state through authenticated REST endpoints
 
@@ -51,7 +52,7 @@ The current scope is intentionally narrow so the important backend ideas are eas
 - Each user has exactly one personal account.
 - Registration creates the user, provisions the account, records the opening transaction, and issues the auth cookie.
 - The opening balance is demo money: `5000 GBP`.
-- The dashboard supports deposit, withdrawal, transfer, transaction history, and per-transaction detail views.
+- The dashboard supports deposit, withdrawal, transfer, monthly statements, CSV/JSON exports, transaction history, and per-transaction detail views.
 
 This is a deliberate product decision. It removes multi-entity complexity early so the project can focus on correctness, ownership, and system design.
 
@@ -111,6 +112,7 @@ Important limitation:
 These are the main invariants in the current version:
 
 - Money is stored in integer minor units.
+- Financial write routes require an `Idempotency-Key` and replay the stored response when the same request is retried.
 - Withdrawals fail if the account balance is too low.
 - Transfers are atomic: debit, credit, and transaction write share one database transaction.
 - The opening balance is recorded as a transaction entry, not just a silent balance mutation.
@@ -130,12 +132,15 @@ These are the main invariants in the current version:
 - `GET /account`
 - `GET /account/transactions`
 - `GET /account/transactions/:transactionId`
+- `GET /account/statements/monthly`
 
 ### Money Movement
 
 - `POST /account/deposit`
 - `POST /account/withdraw`
 - `POST /account/transfer`
+
+All financial write endpoints require an `Idempotency-Key` header.
 
 ## App Routes
 
@@ -221,7 +226,6 @@ mo-stripe/
 ## Current Limitations
 
 - No automated test suite yet
-- No idempotency keys yet
 - No refresh-token or token-revocation strategy
 - No full ledger posting model yet
 - No reversal or reconciliation workflows yet
@@ -232,10 +236,10 @@ mo-stripe/
 The next meaningful upgrades would be:
 
 1. integration tests around overdraft prevention, transaction ownership, and transfer atomicity
-2. idempotency keys for retry-safe financial writes
-3. a ledger-style posting model with append-only entries
-4. compensating entries for reversals and refunds
-5. more formal account/entity ownership models for business use cases
+2. a ledger-style posting model with append-only entries
+3. compensating entries for reversals and refunds
+4. more formal account/entity ownership models for business use cases
+5. stronger session revocation and refresh-token architecture
 
 ## Why This Matters
 

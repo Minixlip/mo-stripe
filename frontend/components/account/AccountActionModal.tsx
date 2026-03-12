@@ -15,6 +15,14 @@ type AccountActionModalProps = {
   onClose: () => void;
 };
 
+function createBrowserIdempotencyKey() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `mo-stripe-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function getErrorMessage(payload: unknown, fallbackMessage: string) {
   if (typeof payload === 'object' && payload !== null) {
     const record = payload as Record<string, unknown>;
@@ -75,6 +83,8 @@ export function AccountActionModal({
   const [amount, setAmount] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [requestSignature, setRequestSignature] = useState<string | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const config = actionConfig[mode];
@@ -83,6 +93,8 @@ export function AccountActionModal({
     setAmount('');
     setRecipientEmail('');
     setErrorMessage(null);
+    setRequestSignature(null);
+    setIdempotencyKey(null);
     onClose();
   }
 
@@ -96,11 +108,20 @@ export function AccountActionModal({
           mode === 'transfer'
             ? { amount, recipientEmail }
             : { amount };
+        const nextRequestSignature = JSON.stringify(payload);
+        const nextIdempotencyKey =
+          requestSignature === nextRequestSignature && idempotencyKey
+            ? idempotencyKey
+            : createBrowserIdempotencyKey();
+
+        setRequestSignature(nextRequestSignature);
+        setIdempotencyKey(nextIdempotencyKey);
 
         const response = await fetch(`${AUTH_API_URL}${config.endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Idempotency-Key': nextIdempotencyKey,
           },
           credentials: 'include',
           body: JSON.stringify(payload),

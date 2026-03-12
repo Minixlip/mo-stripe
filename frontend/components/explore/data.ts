@@ -190,6 +190,11 @@ export const securityPractices = [
     detail:
       'User-facing errors are normalized to readable API messages instead of leaking raw ORM or validation internals.',
   },
+  {
+    label: 'Idempotent Writes',
+    detail:
+      'Deposit, withdrawal, and transfer requests require an idempotency key so the backend can replay the original result instead of reapplying the mutation.',
+  },
 ] as const;
 
 export const apiGroups = [
@@ -210,9 +215,10 @@ export const apiGroups = [
       'GET /account',
       'GET /account/transactions',
       'GET /account/transactions/:transactionId',
+      'GET /account/statements/monthly',
     ],
     detail:
-      'This layer drives the dashboard read model and ensures account history can only be read by the owning user.',
+      'This layer drives the dashboard read model, monthly statements, and ensures account history can only be read by the owning user.',
   },
   {
     label: 'Money Movement',
@@ -222,15 +228,15 @@ export const apiGroups = [
       'POST /account/transfer',
     ],
     detail:
-      'These handlers enforce amount validation, overdraft prevention, transaction writes, and atomic transfers.',
+      'These handlers enforce amount validation, idempotency keys, overdraft prevention, transaction writes, and atomic transfers.',
   },
 ] as const;
 
 export const roadmapItems = [
   {
-    title: 'Idempotency keys',
+    title: 'Refresh-token revocation',
     detail:
-      'Necessary for retry-safe financial writes so repeated requests do not create duplicate transfers or deposits.',
+      'Logout currently clears the cookie only. A stronger session model would support true revocation and longer-lived refresh tokens.',
   },
   {
     title: 'Ledger-style postings',

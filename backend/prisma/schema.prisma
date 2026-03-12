@@ -18,13 +18,19 @@ enum TransactionType {
   TRANSFER
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+enum IdempotencyStatus {
+  PENDING
+  COMPLETED
+}
 
-  account   Account?
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  password        String
+  createdAt       DateTime         @default(now())
+
+  account         Account?
+  idempotencyKeys IdempotencyKey[]
 }
 
 model Account {
@@ -49,4 +55,22 @@ model Transaction {
 
   fromAccount Account? @relation("FromAccount", fields: [fromAccountId], references: [id])
   toAccount   Account? @relation("ToAccount", fields: [toAccountId], references: [id])
+}
+
+model IdempotencyKey {
+  id             String            @id @default(uuid())
+  key            String
+  operation      String
+  requestHash    String
+  status         IdempotencyStatus @default(PENDING)
+  responseStatus Int?
+  responseBody   Json?
+  createdAt      DateTime          @default(now())
+  completedAt    DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId, createdAt])
 }

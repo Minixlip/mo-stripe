@@ -114,9 +114,10 @@ export const endpointGroups = [
       'GET /account',
       'GET /account/transactions',
       'GET /account/transactions/:transactionId',
+      'GET /account/statements/monthly',
     ],
     detail:
-      'Drives the dashboard summary, history feed, and transaction detail panel.',
+      'Drives the dashboard summary, history feed, transaction detail panel, and monthly statement export surface.',
   },
   {
     title: 'Money movement',
@@ -126,7 +127,7 @@ export const endpointGroups = [
       'POST /account/transfer',
     ],
     detail:
-      'Applies the current financial rules and persists the corresponding transaction rows.',
+      'Applies the current financial rules, requires an `Idempotency-Key`, and persists the corresponding transaction rows.',
   },
 ] as const;
 
@@ -134,7 +135,7 @@ export const currentCapabilities = [
   {
     label: 'What works now',
     detail:
-      'Registration, login, logout, protected session lookup, account summary, transaction history, deposit, withdrawal, transfer, and transaction detail inspection.',
+      'Registration, login, logout, protected session lookup, account summary, monthly statements, CSV/JSON exports, transaction history, deposit, withdrawal, transfer, and transaction detail inspection.',
   },
   {
     label: 'What is intentionally simple',
@@ -144,6 +145,6 @@ export const currentCapabilities = [
   {
     label: 'What should come next',
     detail:
-      'Idempotency keys, integration tests for transaction invariants, a more formal ledger model, and compensating entries for reversals.',
+      'Integration tests for transaction invariants, a more formal ledger model, stronger token revocation, and compensating entries for reversals.',
   },
 ] as const;

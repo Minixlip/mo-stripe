@@ -54,6 +54,33 @@ export type MonthlyStatementData = {
   transactions: TransactionDetailItem[];
 };
 
+export const ACCOUNT_MUTATION_OPERATIONS = {
+  DEPOSIT: 'ACCOUNT_DEPOSIT',
+  WITHDRAW: 'ACCOUNT_WITHDRAW',
+  TRANSFER: 'ACCOUNT_TRANSFER',
+} as const;
+
+export type AccountMutationOperation =
+  (typeof ACCOUNT_MUTATION_OPERATIONS)[keyof typeof ACCOUNT_MUTATION_OPERATIONS];
+
+export type IdempotencyContext = {
+  key: string;
+  requestHash: string;
+};
+
+export type AccountMutationSuccessData = {
+  message: string;
+  balance: number;
+};
+
+export type AccountMutationErrorData = {
+  error: string;
+};
+
+export type AccountMutationResponseBody =
+  | AccountMutationSuccessData
+  | AccountMutationErrorData;
+
 export type AccountOverviewResult =
   | {
       success: true;
@@ -76,14 +103,14 @@ export type AccountOverviewResult =
 export type AccountMutationResult =
   | {
       success: true;
-      data: {
-        message: string;
-        balance: number;
-      };
+      statusCode: number;
+      replayed: boolean;
+      data: AccountMutationSuccessData;
     }
   | {
       success: false;
       statusCode: number;
+      replayed: boolean;
       message: string;
     };
 
