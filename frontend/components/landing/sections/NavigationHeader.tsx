@@ -23,13 +23,13 @@ export async function NavigationHeader() {
 
       <nav className="mono-ui hidden items-center gap-8 text-[12px] text-[#0A0A0A]/80 lg:flex">
         {navigationItems.map((item) => (
-          <a
-            key={item}
-            href="#"
+          <Link
+            key={item.label}
+            href={item.href}
             className="transition-colors duration-150 hover:text-[#0A0A0A]"
           >
-            {item}
-          </a>
+            {item.label}
+          </Link>
         ))}
       </nav>
 

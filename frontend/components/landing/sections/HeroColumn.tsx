@@ -31,13 +31,13 @@ export function HeroColumn() {
 
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <ButtonLink
-            href="#"
+            href="/explore-more"
             icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />}
           >
             Explore More
           </ButtonLink>
           <ButtonLink
-            href="#"
+            href="/explore-more#api-surface"
             icon={<SquareIcon className="h-3.5 w-3.5" />}
             variant="secondary"
           >

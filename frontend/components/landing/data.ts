@@ -3,12 +3,18 @@ import type {
   ArchitectureLayer,
   ArchitectureNote,
   EmployerHighlight,
+  NavigationItem,
   ProcessingCheck,
   Transaction,
   UtilityCardData,
 } from './types';
 
-export const navigationItems = ['Product', 'Pricing', 'Docs', 'Security'];
+export const navigationItems: NavigationItem[] = [
+  { label: 'Overview', href: '/explore-more' },
+  { label: 'Architecture', href: '/explore-more#architecture' },
+  { label: 'Money Flow', href: '/explore-more#money-flow' },
+  { label: 'Security', href: '/explore-more#security' },
+];
 
 export const techStack = [
   'Node.js',

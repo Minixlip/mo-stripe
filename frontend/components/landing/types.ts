@@ -11,6 +11,11 @@ export type ButtonLinkProps = {
   variant?: 'primary' | 'secondary';
 };
 
+export type NavigationItem = {
+  label: string;
+  href: string;
+};
+
 export type UtilityIconName = 'download' | 'activity' | 'branch';
 
 export type UtilityCardData = {
