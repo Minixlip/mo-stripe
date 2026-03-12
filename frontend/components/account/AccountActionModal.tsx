@@ -79,6 +79,13 @@ export function AccountActionModal({
 
   const config = actionConfig[mode];
 
+  function handleClose() {
+    setAmount('');
+    setRecipientEmail('');
+    setErrorMessage(null);
+    onClose();
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -108,7 +115,7 @@ export function AccountActionModal({
           return;
         }
 
-        onClose();
+        handleClose();
         router.refresh();
       } catch {
         setErrorMessage('Unable to reach the banking API.');
@@ -119,7 +126,7 @@ export function AccountActionModal({
   return (
     <AccountDialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       eyebrow={config.eyebrow}
       title={config.title}
       subtitle={config.helper}

@@ -301,25 +301,21 @@ export function AccountDashboard({
         </div>
       </div>
 
-      {actionModalOpen ? (
-        <AccountActionModal
-          key={actionMode}
-          currentEmail={overview.email}
-          mode={actionMode}
-          open={actionModalOpen}
-          onClose={() => setActionModalOpen(false)}
-        />
-      ) : null}
+      <AccountActionModal
+        key={actionMode}
+        currentEmail={overview.email}
+        mode={actionMode}
+        open={actionModalOpen}
+        onClose={() => setActionModalOpen(false)}
+      />
 
-      {transactionModalOpen ? (
-        <AccountTransactionDetailModal
-          key={selectedTransactionId ?? history[0]?.id ?? 'empty'}
-          open={transactionModalOpen}
-          transactionId={selectedTransactionId ?? history[0]?.id ?? null}
-          initialTransactionDetail={initialTransactionDetail}
-          onClose={() => setTransactionModalOpen(false)}
-        />
-      ) : null}
+      <AccountTransactionDetailModal
+        key={selectedTransactionId ?? history[0]?.id ?? 'empty'}
+        open={transactionModalOpen}
+        transactionId={selectedTransactionId ?? history[0]?.id ?? null}
+        initialTransactionDetail={initialTransactionDetail}
+        onClose={() => setTransactionModalOpen(false)}
+      />
     </>
   );
 }
