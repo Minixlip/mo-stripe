@@ -11,7 +11,7 @@ The purpose of the project is not only to build a polished interface, but to lea
 - integration-tested financial invariants
 - explicit tradeoffs and roadmap thinking
 
-The project currently supports one personal account per user, cookie-backed authentication, account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, and transaction detail inspection.
+The project currently supports one personal account per user, cookie-backed authentication, automatic account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, transaction detail inspection, append-only ledger postings, idempotent financial writes, integration tests, and backend observability.
 
 ## What This Project Demonstrates
 
@@ -20,6 +20,7 @@ The project currently supports one personal account per user, cookie-backed auth
 - balances stored in integer pence rather than floating point values
 - overdraft prevention on withdrawals
 - atomic transfer execution using Prisma database transactions
+- append-only debit and credit ledger postings for financial mutations
 - idempotency-key protection for retry-safe financial writes
 - opening balances recorded as real transactions so balance and history stay aligned
 - backend integration tests around auth, idempotency, overdrafts, and transfer postings
@@ -42,6 +43,7 @@ The project currently supports one personal account per user, cookie-backed auth
 - TypeScript
 - Prisma ORM
 - PostgreSQL
+- Vitest + Supertest for backend integration coverage
 
 ### Auth and Data
 
@@ -96,6 +98,28 @@ At a high level, requests move through these layers:
 - `toAccountId`
 - `createdAt`
 
+#### LedgerPosting
+
+- `id`
+- `transactionId`
+- `accountId`
+- `amount`
+- `direction`
+- `createdAt`
+
+#### IdempotencyKey
+
+- `id`
+- `userId`
+- `key`
+- `operation`
+- `requestHash`
+- `status`
+- `responseStatus`
+- `responseBody`
+- `createdAt`
+- `completedAt`
+
 ## Authentication Model
 
 The auth flow is intentionally server-trusting:
@@ -117,6 +141,7 @@ These are the main invariants in the current version:
 
 - Money is stored in integer minor units.
 - Financial write routes require an `Idempotency-Key` and replay the stored response when the same request is retried.
+- Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.
 - Withdrawals fail if the account balance is too low.
 - Transfers are atomic: debit, credit, and transaction write share one database transaction.
 - The opening balance is recorded as a transaction entry, not just a silent balance mutation.
@@ -124,9 +149,12 @@ These are the main invariants in the current version:
 
 ## API Surface
 
-### Auth
+### Operational
 
 - `GET /health`
+
+### Auth
+
 - `POST /register`
 - `POST /login`
 - `POST /logout`
@@ -180,6 +208,7 @@ DIRECT_URL=your_postgres_connection_string
 JWT_SECRET_KEY=replace_with_a_long_random_secret
 PORT=4000
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:3000
 ```
 
 Apply migrations and optional seed data:
@@ -225,6 +254,10 @@ cd backend
 ALLOW_TEST_DB_RESET=true npm run test:integration
 ```
 
+### 4. CI
+
+GitHub Actions provisions Postgres, applies backend migrations, runs backend integration tests, then runs frontend lint and production build checks.
+
 ## Repository Structure
 
 ```text
@@ -247,7 +280,9 @@ mo-stripe/
 
 - No refresh-token or token-revocation strategy
 - No reversal or reconciliation workflows yet
+- No rate limiting or abuse protection yet
 - No multi-account or business-entity model yet
+- No public deployment configuration in the repo yet
 
 ## Roadmap
 
@@ -255,9 +290,10 @@ The next meaningful upgrades would be:
 
 1. deriving balances entirely from append-only ledger postings
 2. compensating entries for reversals and refunds
-3. more formal account/entity ownership models for business use cases
-4. stronger session revocation and refresh-token architecture
-5. request logging, metrics, and operational dashboards
+3. stronger session revocation and refresh-token architecture
+4. rate limiting and abuse protection on auth and money-moving routes
+5. more formal account/entity ownership models for business use cases
+6. public deployment plus metrics and alerting around the current health surface
 
 ## Why This Matters
 

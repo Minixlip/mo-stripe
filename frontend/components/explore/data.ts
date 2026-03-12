@@ -15,7 +15,7 @@ export const exploreSignals = [
   },
   {
     label: 'Current Scope',
-    value: 'single personal account with authenticated money movement',
+    value: 'single personal account with ledger-backed, idempotent money movement',
   },
 ] as const;
 
@@ -59,37 +59,37 @@ export const engineeringHighlights: EmployerHighlight[] = [
   {
     index: '03',
     eyebrow: 'POSTING SAFETY',
-    title: 'Atomic Balance Updates',
+    title: 'Idempotent Ledger Writes',
     description:
-      'Withdrawals and transfers run inside database transactions so debits, credits, and transaction writes share one commit outcome.',
-    system: 'posting_service',
-    mode: 'prisma transaction',
-    invariant: 'no split outcome',
-    proofLabel: 'commit path',
-    proofValue: 'all_or_nothing',
-    footer: 'partial movement blocked',
+      'Financial write routes require an idempotency key and persist append-only debit and credit postings so retries stay safe and every balance change remains auditable.',
+    system: 'ledger_write_path',
+    mode: 'idempotent + atomic',
+    invariant: 'retry safe',
+    proofLabel: 'write contract',
+    proofValue: 'key_required',
+    footer: 'duplicate writes blocked',
     rows: [
-      { label: 'DEBIT', value: 'BALANCE GUARDED' },
-      { label: 'LEDGER WRITE', value: 'SAME COMMIT' },
-      { label: 'ROLLBACK', value: 'ON FAILURE', tone: 'accent' },
+      { label: 'HEADER', value: 'IDEMPOTENCY-KEY' },
+      { label: 'POSTINGS', value: 'DEBIT + CREDIT' },
+      { label: 'COMMIT', value: 'ALL OR NOTHING', tone: 'accent' },
     ],
   },
   {
     index: '04',
-    eyebrow: 'READ SURFACE',
-    title: 'Audit-Friendly Views',
+    eyebrow: 'OPERATIONS',
+    title: 'Observable Backend Boundary',
     description:
-      'The account dashboard reads authenticated summary, history, and per-transaction detail endpoints so the UI is backed by persisted ledger data.',
-    system: 'account_read_model',
-    mode: 'owned queries',
-    invariant: 'history aligned',
-    proofLabel: 'detail access',
-    proofValue: 'ownership_checked',
-    footer: 'balance and history stay coherent',
+      'Every request receives a request id, the API emits structured JSON access logs, exposes a health route, and runs CI-backed integration tests for the money-moving flows.',
+    system: 'ops_surface',
+    mode: 'health + logs + ci',
+    invariant: 'traceable requests',
+    proofLabel: 'service signal',
+    proofValue: 'request_id',
+    footer: 'runtime behavior is inspectable',
     rows: [
-      { label: 'SUMMARY', value: 'GET /account' },
-      { label: 'HISTORY', value: 'GET /transactions' },
-      { label: 'DETAIL', value: 'OWNED ROW ONLY', tone: 'accent' },
+      { label: 'HEALTH', value: 'GET /HEALTH' },
+      { label: 'RESPONSES', value: 'X-REQUEST-ID' },
+      { label: 'CI', value: 'TESTED ON PUSH', tone: 'accent' },
     ],
   },
 ];
@@ -129,19 +129,19 @@ export const requestFlow = [
     step: '03',
     title: 'Service layer enforces invariants',
     detail:
-      'Business logic checks account ownership, prevents overdrafts, and blocks self-transfer edge cases.',
+      'Business logic checks account ownership, validates idempotency context, prevents overdrafts, and blocks self-transfer edge cases.',
   },
   {
     step: '04',
     title: 'Database transaction commits',
     detail:
-      'Balance updates and transaction rows are written together, which prevents partial financial state.',
+      'Balance updates, transaction rows, and append-only ledger postings are written together, which prevents partial financial state.',
   },
   {
     step: '05',
-    title: 'Read model reflects persisted state',
+    title: 'Response is correlated and logged',
     detail:
-      'The account page reads summary, history, and transaction detail from the API rather than inventing state client-side.',
+      'The API returns an `X-Request-Id`, emits a structured request log line, and the frontend then reads the persisted summary, history, and statement data.',
   },
 ] as const;
 
@@ -150,22 +150,22 @@ export const moneyFlowCards = [
     id: 'deposit',
     title: 'Deposit',
     detail:
-      'Deposit requests convert GBP strings to pence, increment the account balance, and create a matching DEPOSIT transaction row.',
-    notes: ['positive amount required', 'single-account credit', 'history write included'],
+      'Deposit requests convert GBP strings to pence, increment the account balance, create a DEPOSIT transaction row, and append a matching CREDIT posting.',
+    notes: ['positive amount required', 'idempotency enforced', 'credit posting written'],
   },
   {
     id: 'withdraw',
     title: 'Withdraw',
     detail:
-      'Withdrawals use a guarded update so the balance only decrements when sufficient funds are available at commit time.',
-    notes: ['no overdraft', 'same-transaction history write', '409 on insufficient funds'],
+      'Withdrawals use a guarded update so the balance only decrements when sufficient funds are available at commit time, then append a DEBIT posting.',
+    notes: ['no overdraft', 'debit posting written', '409 on insufficient funds'],
   },
   {
     id: 'transfer',
     title: 'Transfer',
     detail:
-      'Transfers resolve the recipient by email, block self-transfer, debit the sender, credit the recipient, and write one TRANSFER record.',
-    notes: ['atomic debit and credit', 'ownership enforced', 'recipient must exist'],
+      'Transfers resolve the recipient by email, block self-transfer, debit the sender, credit the recipient, write one TRANSFER record, and append both posting legs.',
+    notes: ['atomic debit and credit', 'idempotent retry safe', 'recipient must exist'],
   },
 ] as const;
 
@@ -195,6 +195,16 @@ export const securityPractices = [
     detail:
       'Deposit, withdrawal, and transfer requests require an idempotency key so the backend can replay the original result instead of reapplying the mutation.',
   },
+  {
+    label: 'Integration Tests',
+    detail:
+      'The backend suite exercises auth cookies, write idempotency, overdraft prevention, balanced transfer postings, and transaction ownership over real HTTP routes.',
+  },
+  {
+    label: 'Operational Signals',
+    detail:
+      'Each request gets a correlation id, logs as structured JSON, and the service exposes a health endpoint for runtime checks.',
+  },
 ] as const;
 
 export const apiGroups = [
@@ -208,6 +218,12 @@ export const apiGroups = [
     ],
     detail:
       'This layer owns credential validation, password hashing, cookie issuance, and authenticated session lookup.',
+  },
+  {
+    label: 'Operational Surface',
+    routes: ['GET /health'],
+    detail:
+      'This route performs a lightweight database ping, while the wider HTTP layer adds request ids and structured access logs to every response cycle.',
   },
   {
     label: 'Account Surface',
@@ -228,7 +244,7 @@ export const apiGroups = [
       'POST /account/transfer',
     ],
     detail:
-      'These handlers enforce amount validation, idempotency keys, overdraft prevention, transaction writes, and atomic transfers.',
+      'These handlers enforce amount validation, idempotency keys, overdraft prevention, transaction writes, append-only ledger postings, and atomic transfers.',
   },
 ] as const;
 
@@ -239,18 +255,23 @@ export const roadmapItems = [
       'Logout currently clears the cookie only. A stronger session model would support true revocation and longer-lived refresh tokens.',
   },
   {
-    title: 'Ledger-style postings',
+    title: 'Posting-derived balances',
     detail:
-      'Each money movement now writes append-only debit and credit posting rows alongside the business transaction. A stronger next step would be deriving balances solely from those postings.',
+      'Each money movement already writes append-only debit and credit postings. The stronger next step is to derive balances directly from those postings instead of keeping a balance snapshot.',
   },
   {
-    title: 'Automated tests',
+    title: 'Rate limiting and abuse protection',
     detail:
-      'The backend now has integration coverage around auth cookies, idempotent writes, overdraft prevention, balanced transfer postings, and transaction ownership checks.',
+      'The write path is now test-covered, but auth and money-moving routes still need rate limiting and abuse controls for a more production-like posture.',
   },
   {
     title: 'Reversals and reconciliation',
     detail:
       'Once the write path is stable, compensating entries and admin reconciliation become the next meaningful financial features.',
+    },
+  {
+    title: 'Public deployment and metrics',
+    detail:
+      'The service now has request ids, logs, health checks, and CI. The next operational step is a public deployment target with metrics, alerts, and environment hardening.',
   },
 ] as const;
