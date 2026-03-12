@@ -172,36 +172,41 @@ export const getAccountMonthlyStatement = async (
 
     const { periodStart, periodEnd, periodEndExclusive } = getMonthRange(month);
 
-    const [monthTransactions, laterTransactions] = await prisma.$transaction([
-      prisma.transaction.findMany({
-        where: {
-          ledgerPostings: {
-            some: {
-              accountId: account.id,
+    const [monthTransactions, laterTransactions] = await prisma.$transaction(
+      async (tx) => {
+        const transactions = await tx.transaction.findMany({
+          where: {
+            ledgerPostings: {
+              some: {
+                accountId: account.id,
+              },
+            },
+            createdAt: {
+              gte: periodStart,
+              lt: periodEndExclusive,
             },
           },
-          createdAt: {
-            gte: periodStart,
-            lt: periodEndExclusive,
+          orderBy: { createdAt: 'asc' },
+          select: getAccountTransactionDetailSelect(account.id),
+        });
+
+        const postings = await tx.ledgerPosting.findMany({
+          where: {
+            accountId: account.id,
+            createdAt: {
+              gte: periodEndExclusive,
+            },
           },
-        },
-        orderBy: { createdAt: 'asc' },
-        select: getAccountTransactionDetailSelect(account.id),
-      }),
-      prisma.ledgerPosting.findMany({
-        where: {
-          accountId: account.id,
-          createdAt: {
-            gte: periodEndExclusive,
+          orderBy: { createdAt: 'asc' },
+          select: {
+            amount: true,
+            direction: true,
           },
-        },
-        orderBy: { createdAt: 'asc' },
-        select: {
-          amount: true,
-          direction: true,
-        },
-      }),
-    ]);
+        });
+
+        return [transactions, postings] as const;
+      },
+    );
 
     const statementTransactions = monthTransactions.map((transaction) =>
       mapTransactionDetail(account.id, transaction),

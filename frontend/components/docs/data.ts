@@ -145,6 +145,6 @@ export const currentCapabilities = [
   {
     label: 'What should come next',
     detail:
-      'Integration tests for transaction invariants, balances derived directly from postings, stronger token revocation, and compensating entries for reversals.',
+      'Balances derived directly from postings, stronger token revocation, compensating entries for reversals, and richer operational observability.',
   },
 ] as const;

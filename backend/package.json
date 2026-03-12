@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test:integration",
+    "test:integration": "vitest run",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
@@ -23,7 +24,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0",
+    "pg": "^8.16.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -34,8 +35,11 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.5",
     "@types/pg": "^8.18.0",
+    "@types/supertest": "^7.2.0",
     "prisma": "^7.4.2",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   }
 }

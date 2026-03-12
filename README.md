@@ -8,6 +8,7 @@ The purpose of the project is not only to build a polished interface, but to lea
 - relational data modeling
 - atomic financial writes
 - audit-friendly transaction history
+- integration-tested financial invariants
 - explicit tradeoffs and roadmap thinking
 
 The project currently supports one personal account per user, cookie-backed authentication, account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, and transaction detail inspection.
@@ -21,6 +22,8 @@ The project currently supports one personal account per user, cookie-backed auth
 - atomic transfer execution using Prisma database transactions
 - idempotency-key protection for retry-safe financial writes
 - opening balances recorded as real transactions so balance and history stay aligned
+- backend integration tests around auth, idempotency, overdrafts, and transfer postings
+- GitHub Actions CI for backend tests plus frontend lint/build checks
 - a Next.js dashboard that reads backend state through authenticated REST endpoints
 
 ## Tech Stack
@@ -205,6 +208,15 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+### 3. Backend integration tests
+
+The backend test suite truncates the database between runs, so point it at a disposable local Postgres instance.
+
+```bash
+cd backend
+ALLOW_TEST_DB_RESET=true npm run test:integration
+```
+
 ## Repository Structure
 
 ```text
@@ -225,7 +237,6 @@ mo-stripe/
 
 ## Current Limitations
 
-- No automated test suite yet
 - No refresh-token or token-revocation strategy
 - No reversal or reconciliation workflows yet
 - No multi-account or business-entity model yet
@@ -234,11 +245,11 @@ mo-stripe/
 
 The next meaningful upgrades would be:
 
-1. integration tests around overdraft prevention, transaction ownership, and transfer atomicity
-2. deriving balances entirely from append-only ledger postings
-3. compensating entries for reversals and refunds
-4. more formal account/entity ownership models for business use cases
-5. stronger session revocation and refresh-token architecture
+1. deriving balances entirely from append-only ledger postings
+2. compensating entries for reversals and refunds
+3. more formal account/entity ownership models for business use cases
+4. stronger session revocation and refresh-token architecture
+5. request logging, metrics, and operational dashboards
 
 ## Why This Matters
 

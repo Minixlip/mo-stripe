@@ -246,7 +246,7 @@ export const roadmapItems = [
   {
     title: 'Automated tests',
     detail:
-      'The most important tests are around overdraft prevention, transaction ownership, duplicate registration, and transfer atomicity.',
+      'The backend now has integration coverage around auth cookies, idempotent writes, overdraft prevention, balanced transfer postings, and transaction ownership checks.',
   },
   {
     title: 'Reversals and reconciliation',
