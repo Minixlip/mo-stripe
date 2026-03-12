@@ -168,13 +168,13 @@ export function AccountTransactionDetailModal({
         <div className="space-y-5">
           <section className="border border-[#0A0A0A] bg-[#FFFFFF]/62 p-5">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
+              <div className="min-w-0">
                 <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/48">
                   Posting amount
                 </div>
                 <div
                   className={[
-                    'mono-ui mt-4 text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-0.07em]',
+                    'mono-ui ledger-value mt-4 text-[clamp(2.2rem,4vw,3.6rem)] font-semibold leading-none tracking-[-0.07em]',
                     transaction.incoming ? 'text-[#167c5a]' : 'text-[#0A0A0A]',
                   ].join(' ')}
                 >
@@ -200,7 +200,7 @@ export function AccountTransactionDetailModal({
               <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/48">
                 Counterparty
               </div>
-              <div className="mono-ui mt-4 text-[1rem] font-medium tracking-[-0.04em] text-[#0A0A0A]">
+              <div className="mono-ui ledger-value mt-4 text-[1rem] font-medium tracking-[-0.04em] text-[#0A0A0A]">
                 {transaction.counterpartyEmail ?? 'system bootstrap'}
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createDeposit } from '../controllers/CreateDeposit.js';
+import { getAccountMonthlyStatementController } from '../controllers/GetAccountMonthlyStatement.js';
 import { getAccountTransactionController } from '../controllers/GetAccountTransaction.js';
 import { getAccountTransactionsController } from '../controllers/GetAccountTransactions.js';
 import { createTransfer } from '../controllers/CreateTransfer.js';
@@ -10,6 +11,11 @@ import { authenticateRequest } from '../middleware/auth.middleware.js';
 const router = Router();
 
 router.get('/', authenticateRequest, getAccount);
+router.get(
+  '/statements/monthly',
+  authenticateRequest,
+  getAccountMonthlyStatementController,
+);
 router.get('/transactions', authenticateRequest, getAccountTransactionsController);
 router.get(
   '/transactions/:transactionId',

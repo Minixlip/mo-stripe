@@ -28,6 +28,12 @@ export const detailedDateFormatter = new Intl.DateTimeFormat('en-GB', {
   minute: '2-digit',
 });
 
+const statementMonthFormatter = new Intl.DateTimeFormat('en-GB', {
+  year: 'numeric',
+  month: 'long',
+  timeZone: 'UTC',
+});
+
 export function formatCurrencyFromPence(amount: number) {
   return gbpFormatter.format(amount / 100);
 }
@@ -38,6 +44,22 @@ export function formatSignedCurrencyFromPence(amount: number, incoming: boolean)
 
 export function formatNetCurrencyFromPence(amount: number) {
   return `${amount >= 0 ? '+' : '-'} ${formatCurrencyFromPence(Math.abs(amount))}`;
+}
+
+export function getCurrentMonthValue() {
+  const now = new Date();
+
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+export function getMonthInputValue(dateString: string) {
+  const date = new Date(dateString);
+
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+export function formatStatementMonth(month: string) {
+  return statementMonthFormatter.format(new Date(`${month}-01T00:00:00.000Z`));
 }
 
 export function maskAccountId(id: string | null) {

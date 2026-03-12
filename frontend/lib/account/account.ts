@@ -17,6 +17,28 @@ export type AccountTransactionDetail = AccountActivityEntry & {
   toAccountId: string | null;
 };
 
+export type AccountMonthlyStatement = {
+  month: string;
+  generatedAt: string;
+  periodStart: string;
+  periodEnd: string;
+  account: {
+    id: string;
+    createdAt: string;
+  };
+  summary: {
+    openingBalance: number;
+    closingBalance: number;
+    totalDeposits: number;
+    totalWithdrawals: number;
+    totalIncomingTransfers: number;
+    totalOutgoingTransfers: number;
+    netFlow: number;
+    transactionCount: number;
+  };
+  transactions: AccountTransactionDetail[];
+};
+
 export type AccountOverview = {
   email: string;
   account: {

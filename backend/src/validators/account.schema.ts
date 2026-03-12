@@ -40,3 +40,24 @@ export const AccountTransactionsQuerySchema = z.object({
 export const AccountTransactionParamsSchema = z.object({
   transactionId: z.string().uuid('Transaction id is invalid.'),
 });
+
+function isFutureMonth(value: string) {
+  const [yearPart, monthPart] = value.split('-');
+  const year = Number(yearPart);
+  const monthIndex = Number(monthPart) - 1;
+  const now = new Date();
+  const currentYear = now.getUTCFullYear();
+  const currentMonthIndex = now.getUTCMonth();
+
+  return (
+    year > currentYear ||
+    (year === currentYear && monthIndex > currentMonthIndex)
+  );
+}
+
+export const AccountMonthlyStatementQuerySchema = z.object({
+  month: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Month must be in YYYY-MM format.')
+    .refine((value) => !isFutureMonth(value), 'Month cannot be in the future.'),
+});

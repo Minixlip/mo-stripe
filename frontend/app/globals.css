@@ -94,6 +94,15 @@ button:disabled {
     'ss01' 1;
 }
 
+.ledger-value {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.14;
+}
+
 .key-press {
   box-shadow: 2px 2px 0 #0a0a0a;
   transform: translate(0, 0);

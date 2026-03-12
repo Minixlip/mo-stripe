@@ -19,12 +19,16 @@ import {
   type ActionMode,
 } from './AccountActionConsole';
 import { AccountActionModal } from './AccountActionModal';
+import { AccountStatementModal } from './AccountStatementModal';
 import { AccountTransactionDetailModal } from './AccountTransactionDetailModal';
 import { AccountTransactionSurface } from './AccountTransactionSurface';
 import {
   compactDateFormatter,
+  formatStatementMonth,
   formatCurrencyFromPence,
   formatNetCurrencyFromPence,
+  getCurrentMonthValue,
+  getMonthInputValue,
   longDateFormatter,
   maskAccountId,
 } from './accountDisplay';
@@ -37,7 +41,7 @@ type AccountDashboardProps = {
 
 const utilityCards = [
   {
-    label: 'ROLL WINDOW',
+    label: 'STATEMENT WINDOW',
     icon: DownloadIcon,
   },
   {
@@ -66,6 +70,7 @@ export function AccountDashboard({
   const [actionModalOpen, setActionModalOpen] = useState(
     requestedAction !== null,
   );
+  const [statementModalOpen, setStatementModalOpen] = useState(false);
   const [transactionModalOpen, setTransactionModalOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(
     initialTransactionDetail?.id ?? history[0]?.id ?? null,
@@ -94,6 +99,10 @@ export function AccountDashboard({
   const lastExternalCounterparty =
     history.find((item) => item.counterpartyEmail)?.counterpartyEmail ??
     'system bootstrap';
+  const defaultStatementMonth = history[0]
+    ? getMonthInputValue(history[0].createdAt)
+    : getCurrentMonthValue();
+  const minimumStatementMonth = getMonthInputValue(overview.account.createdAt);
 
   function openActionModal(mode: ActionMode) {
     setActionMode(mode);
@@ -156,6 +165,14 @@ export function AccountDashboard({
                 >
                   Transaction details
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStatementModalOpen(true)}
+                  className="mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] px-6 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] transition-colors duration-150 hover:bg-[#FFFFFF]"
+                >
+                  Monthly statements
+                </button>
               </div>
             </div>
 
@@ -177,27 +194,27 @@ export function AccountDashboard({
                     <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/62">
                       Current
                     </div>
-                    <div className="mt-7 flex items-end gap-3">
-                      <span className="mono-ui text-[clamp(2.8rem,5vw,4.5rem)] font-semibold leading-none tracking-[-0.08em] text-[#0A0A0A]">
+                    <div className="mt-7 min-w-0">
+                      <span className="mono-ui ledger-value text-[clamp(2.8rem,5vw,4.5rem)] font-semibold leading-none tracking-[-0.08em] text-[#0A0A0A]">
                         {formatCurrencyFromPence(overview.account.balance)}
                       </span>
                     </div>
 
                     <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                      <div className="border border-[#0A0A0A] bg-[#F4F3EF]/70 px-4 py-4">
+                      <div className="min-w-0 border border-[#0A0A0A] bg-[#F4F3EF]/70 px-4 py-4">
                         <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/55">
                           Recent flow
                         </div>
-                        <div className="mono-ui mt-4 text-[1.45rem] font-semibold tracking-[-0.05em] text-[#0A0A0A]">
+                        <div className="mono-ui ledger-value mt-4 text-[clamp(1rem,2vw,1.45rem)] font-semibold tracking-[-0.05em] text-[#0A0A0A]">
                           {formatNetCurrencyFromPence(visibleFlow)}
                         </div>
                       </div>
 
-                      <div className="border border-[#0A0A0A] bg-[#F4F3EF]/70 px-4 py-4">
+                      <div className="min-w-0 border border-[#0A0A0A] bg-[#F4F3EF]/70 px-4 py-4">
                         <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/55">
                           Last settled
                         </div>
-                        <div className="mono-ui mt-4 text-[1.45rem] font-semibold tracking-[-0.05em] text-[#0A0A0A]">
+                        <div className="mono-ui ledger-value mt-4 text-[clamp(1rem,2vw,1.45rem)] font-semibold tracking-[-0.05em] text-[#0A0A0A]">
                           {compactDateFormatter.format(new Date(lastSettledAt))}
                         </div>
                       </div>
@@ -232,11 +249,11 @@ export function AccountDashboard({
                         </div>
                       </div>
 
-                      <div className="text-right">
+                      <div className="min-w-0 text-right">
                         <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/55">
                           Balance
                         </div>
-                        <div className="mono-ui mt-4 text-[1.9rem] font-semibold tracking-[-0.06em] text-[#0A0A0A]">
+                        <div className="mono-ui ledger-value mt-4 text-[clamp(1.2rem,2.4vw,1.9rem)] font-semibold tracking-[-0.06em] text-[#0A0A0A]">
                           {formatCurrencyFromPence(overview.account.balance)}
                         </div>
                       </div>
@@ -275,12 +292,21 @@ export function AccountDashboard({
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="mt-5 text-[15px] leading-7 text-[#0A0A0A]/72">
-                            {card.label === 'ROLL WINDOW'
-                              ? `${history.length} entries loaded`
+                            {card.label === 'STATEMENT WINDOW'
+                              ? `${formatStatementMonth(defaultStatementMonth)} ready`
                               : card.label === 'TRANSFER BUS'
                                 ? `${recentTransferCount} transfer events`
                                 : lastExternalCounterparty}
                           </div>
+                          {card.label === 'STATEMENT WINDOW' ? (
+                            <button
+                              type="button"
+                              onClick={() => setStatementModalOpen(true)}
+                              className="mono-ui mt-4 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A] underline underline-offset-4"
+                            >
+                              Open exports
+                            </button>
+                          ) : null}
                         </div>
                       );
                     })}
@@ -315,6 +341,13 @@ export function AccountDashboard({
         transactionId={selectedTransactionId ?? history[0]?.id ?? null}
         initialTransactionDetail={initialTransactionDetail}
         onClose={() => setTransactionModalOpen(false)}
+      />
+
+      <AccountStatementModal
+        open={statementModalOpen}
+        defaultMonth={defaultStatementMonth}
+        minimumMonth={minimumStatementMonth}
+        onClose={() => setStatementModalOpen(false)}
       />
     </>
   );

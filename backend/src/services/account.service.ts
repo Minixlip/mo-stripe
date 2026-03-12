@@ -26,6 +26,36 @@ type TransactionDetailItem = ActivityItem & {
   toAccountId: string | null;
 };
 
+type BalanceEffectRecord = {
+  amount: number;
+  fromAccountId: string | null;
+  toAccountId: string | null;
+};
+
+type MonthlyStatementSummary = {
+  openingBalance: number;
+  closingBalance: number;
+  totalDeposits: number;
+  totalWithdrawals: number;
+  totalIncomingTransfers: number;
+  totalOutgoingTransfers: number;
+  netFlow: number;
+  transactionCount: number;
+};
+
+type MonthlyStatementData = {
+  month: string;
+  generatedAt: Date;
+  periodStart: Date;
+  periodEnd: Date;
+  account: {
+    id: string;
+    createdAt: Date;
+  };
+  summary: MonthlyStatementSummary;
+  transactions: TransactionDetailItem[];
+};
+
 type AccountOverviewResult =
   | {
       success: true;
@@ -85,6 +115,19 @@ type AccountTransactionDetailResult =
       message: string;
     };
 
+type AccountMonthlyStatementResult =
+  | {
+      success: true;
+      data: {
+        statement: MonthlyStatementData;
+      };
+    }
+  | {
+      success: false;
+      statusCode: number;
+      message: string;
+    };
+
 type TransferInput = {
   amount: number;
   recipientEmail: string;
@@ -129,6 +172,83 @@ function mapTransactionDetail(
     counterpartyEmail: activity.counterpartyEmail,
     fromAccountId: transaction.fromAccountId,
     toAccountId: transaction.toAccountId,
+  };
+}
+
+function getMonthRange(month: string) {
+  const [yearPart, monthPart] = month.split('-');
+  const year = Number(yearPart);
+  const monthIndex = Number(monthPart) - 1;
+  const periodStart = new Date(Date.UTC(year, monthIndex, 1));
+  const periodEndExclusive = new Date(Date.UTC(year, monthIndex + 1, 1));
+  const periodEnd = new Date(periodEndExclusive.getTime() - 1);
+
+  return {
+    periodStart,
+    periodEnd,
+    periodEndExclusive,
+  };
+}
+
+function getNetBalanceEffect(
+  accountId: string,
+  transactions: BalanceEffectRecord[],
+) {
+  return transactions.reduce((total, transaction) => {
+    if (transaction.toAccountId === accountId) {
+      return total + transaction.amount;
+    }
+
+    return total - transaction.amount;
+  }, 0);
+}
+
+function buildMonthlyStatementSummary(
+  transactions: TransactionDetailItem[],
+  openingBalance: number,
+  closingBalance: number,
+): MonthlyStatementSummary {
+  const totalDeposits = transactions.reduce((total, transaction) => {
+    if (transaction.type !== 'DEPOSIT' || !transaction.incoming) {
+      return total;
+    }
+
+    return total + transaction.amount;
+  }, 0);
+
+  const totalWithdrawals = transactions.reduce((total, transaction) => {
+    if (transaction.type !== 'WITHDRAWAL' || transaction.incoming) {
+      return total;
+    }
+
+    return total + transaction.amount;
+  }, 0);
+
+  const totalIncomingTransfers = transactions.reduce((total, transaction) => {
+    if (transaction.type !== 'TRANSFER' || !transaction.incoming) {
+      return total;
+    }
+
+    return total + transaction.amount;
+  }, 0);
+
+  const totalOutgoingTransfers = transactions.reduce((total, transaction) => {
+    if (transaction.type !== 'TRANSFER' || transaction.incoming) {
+      return total;
+    }
+
+    return total + transaction.amount;
+  }, 0);
+
+  return {
+    openingBalance,
+    closingBalance,
+    totalDeposits,
+    totalWithdrawals,
+    totalIncomingTransfers,
+    totalOutgoingTransfers,
+    netFlow: closingBalance - openingBalance,
+    transactionCount: transactions.length,
   };
 }
 
@@ -301,6 +421,89 @@ export const getAccountTransactionDetail = async (
       success: false,
       statusCode: 500,
       message: 'Unable to load transaction details.',
+    };
+  }
+};
+
+export const getAccountMonthlyStatement = async (
+  userId: string,
+  month: string,
+): Promise<AccountMonthlyStatementResult> => {
+  try {
+    const account = await getUserAccount(userId);
+
+    if (!account) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: 'Account not found.',
+      };
+    }
+
+    const { periodStart, periodEnd, periodEndExclusive } = getMonthRange(month);
+
+    const [monthTransactions, laterTransactions] = await prisma.$transaction([
+      prisma.transaction.findMany({
+        where: {
+          OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+          createdAt: {
+            gte: periodStart,
+            lt: periodEndExclusive,
+          },
+        },
+        orderBy: { createdAt: 'asc' },
+        select: accountTransactionSelect,
+      }),
+      prisma.transaction.findMany({
+        where: {
+          OR: [{ fromAccountId: account.id }, { toAccountId: account.id }],
+          createdAt: {
+            gte: periodEndExclusive,
+          },
+        },
+        orderBy: { createdAt: 'asc' },
+        select: {
+          amount: true,
+          fromAccountId: true,
+          toAccountId: true,
+        },
+      }),
+    ]);
+
+    const statementTransactions = monthTransactions.map((transaction) =>
+      mapTransactionDetail(account.id, transaction),
+    );
+    const laterNetEffect = getNetBalanceEffect(account.id, laterTransactions);
+    const closingBalance = account.balance - laterNetEffect;
+    const monthNetEffect = getNetBalanceEffect(account.id, monthTransactions);
+    const openingBalance = closingBalance - monthNetEffect;
+
+    return {
+      success: true,
+      data: {
+        statement: {
+          month,
+          generatedAt: new Date(),
+          periodStart,
+          periodEnd,
+          account: {
+            id: account.id,
+            createdAt: account.createdAt,
+          },
+          summary: buildMonthlyStatementSummary(
+            statementTransactions,
+            openingBalance,
+            closingBalance,
+          ),
+          transactions: statementTransactions,
+        },
+      },
+    };
+  } catch {
+    return {
+      success: false,
+      statusCode: 500,
+      message: 'Unable to load monthly statement.',
     };
   }
 };
