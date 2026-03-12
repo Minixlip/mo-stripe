@@ -12,6 +12,7 @@ import type {
 export const navigationItems: NavigationItem[] = [
   { label: 'Overview', href: '/explore-more' },
   { label: 'Architecture', href: '/explore-more#architecture' },
+  { label: 'Docs', href: '/docs' },
   { label: 'Money Flow', href: '/explore-more#money-flow' },
   { label: 'Security', href: '/explore-more#security' },
 ];

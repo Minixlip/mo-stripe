@@ -37,7 +37,7 @@ export function HeroColumn() {
             Explore More
           </ButtonLink>
           <ButtonLink
-            href="/explore-more#api-surface"
+            href="/docs"
             icon={<SquareIcon className="h-3.5 w-3.5" />}
             variant="secondary"
           >
