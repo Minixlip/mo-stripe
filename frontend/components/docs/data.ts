@@ -5,6 +5,7 @@ export const docsSignals = [
   { label: 'Backend', value: 'Node.js, Express, TypeScript, Prisma ORM' },
   { label: 'Database', value: 'PostgreSQL on Supabase' },
   { label: 'Auth', value: 'bcrypt, JWT, httpOnly cookie, protected middleware' },
+  { label: 'Ops', value: 'request ids, structured logs, health checks, CI' },
 ] as const;
 
 export const quickStartSteps = [
@@ -104,9 +105,10 @@ export const endpointGroups = [
       'POST /login',
       'POST /logout',
       'GET /session',
+      'GET /health',
     ],
     detail:
-      'Handles credential lifecycle, cookie issuance, and session verification.',
+      'Handles credential lifecycle, cookie issuance, session verification, and service health checks.',
   },
   {
     title: 'Account reads',

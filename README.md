@@ -24,6 +24,7 @@ The project currently supports one personal account per user, cookie-backed auth
 - opening balances recorded as real transactions so balance and history stay aligned
 - backend integration tests around auth, idempotency, overdrafts, and transfer postings
 - GitHub Actions CI for backend tests plus frontend lint/build checks
+- structured request logging, request IDs, and a health endpoint
 - a Next.js dashboard that reads backend state through authenticated REST endpoints
 
 ## Tech Stack
@@ -125,6 +126,7 @@ These are the main invariants in the current version:
 
 ### Auth
 
+- `GET /health`
 - `POST /register`
 - `POST /login`
 - `POST /logout`
@@ -144,6 +146,12 @@ These are the main invariants in the current version:
 - `POST /account/transfer`
 
 All financial write endpoints require an `Idempotency-Key` header.
+
+### Operational Signals
+
+- Every response includes an `X-Request-Id` header.
+- Backend requests are logged as structured JSON lines with method, path, status, duration, and request id.
+- `GET /health` performs a lightweight database ping and returns service status.
 
 ## App Routes
 
