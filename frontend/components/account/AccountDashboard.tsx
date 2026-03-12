@@ -1,25 +1,21 @@
 import {
   ActivityIcon,
-  ArrowRightIcon,
-  ArrowUpRightIcon,
   BranchIcon,
   DownloadIcon,
   ShieldIcon,
-  TransferIcon,
 } from '@/components/landing/ui';
-import type { AccountOverview } from '@/lib/account/account';
+import type {
+  AccountActivityEntry,
+  AccountOverview,
+  AccountTransactionDetail,
+} from '@/lib/account/account';
+import { AccountActionConsole } from './AccountActionConsole';
+import { AccountTransactionSurface } from './AccountTransactionSurface';
 
 type AccountDashboardProps = {
   overview: AccountOverview;
-};
-
-type LedgerLine = {
-  id: string;
-  amount: string;
-  label: string;
-  meta: string;
-  positive: boolean;
-  muted?: boolean;
+  history: AccountActivityEntry[];
+  initialTransactionDetail: AccountTransactionDetail | null;
 };
 
 const gbpFormatter = new Intl.NumberFormat('en-GB', {
@@ -39,79 +35,47 @@ const longDateFormatter = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit',
 });
 
+const utilityCards = [
+  {
+    label: 'ROLL WINDOW',
+    icon: DownloadIcon,
+  },
+  {
+    label: 'TRANSFER BUS',
+    icon: ActivityIcon,
+  },
+  {
+    label: 'AUDIT TRAIL',
+    icon: BranchIcon,
+  },
+] as const;
+
 function formatCurrencyFromPence(amount: number) {
   return gbpFormatter.format(amount / 100);
 }
 
-function formatAmountForLedger(amount: number, incoming: boolean) {
-  const formatted = formatCurrencyFromPence(amount);
-  return `${incoming ? '+' : '-'} ${formatted}`;
+function formatSignedCurrencyFromPence(amount: number) {
+  return `${amount >= 0 ? '+' : '-'} ${formatCurrencyFromPence(Math.abs(amount))}`;
 }
 
 function maskAccountId(id: string) {
   return `*${id.slice(-4).toUpperCase()}`;
 }
 
-function buildLedgerLines(overview: AccountOverview): LedgerLine[] {
-  const transactionLines = overview.activity.map((item) => ({
-    id: item.id,
-    amount: formatAmountForLedger(item.amount, item.incoming),
-    label:
-      item.type === 'DEPOSIT' && item.systemGenerated ? 'OPENING_DEPOSIT' : item.type,
-    meta: longDateFormatter.format(new Date(item.createdAt)),
-    positive: item.incoming,
-    muted: item.systemGenerated,
-  }));
-
-  return [
-    {
-      id: 'account-opened',
-      amount: 'SYSTEM',
-      label: 'ACCOUNT_OPENED',
-      meta: longDateFormatter.format(new Date(overview.account.createdAt)),
-      positive: true,
-      muted: true,
-    },
-    ...transactionLines,
-    {
-      id: 'session-verified',
-      amount: 'LIVE',
-      label: 'SESSION_VERIFIED',
-      meta: overview.email,
-      positive: true,
-      muted: true,
-    },
-  ];
-}
-
-const utilityCards = [
-  {
-    label: 'EXPORT',
-    value: 'CSV / JSON',
-    icon: DownloadIcon,
-  },
-  {
-    label: 'WEBHOOKS',
-    value: 'coming next',
-    icon: ActivityIcon,
-  },
-  {
-    label: 'AUDIT TRAIL',
-    value: 'opening write',
-    icon: BranchIcon,
-  },
-];
-
-export function AccountDashboard({ overview }: AccountDashboardProps) {
-  const ledgerLines = buildLedgerLines(overview);
-  const rollingLines =
-    ledgerLines.length >= 6 ? [...ledgerLines, ...ledgerLines] : ledgerLines;
-  const shouldAnimate = ledgerLines.length >= 6;
-  const lastSettledAt = overview.activity[0]?.createdAt ?? overview.account.createdAt;
-  const netFlow = overview.activity.reduce(
+export function AccountDashboard({
+  overview,
+  history,
+  initialTransactionDetail,
+}: AccountDashboardProps) {
+  const lastSettledAt = history[0]?.createdAt ?? overview.account.createdAt;
+  const visibleFlow = history.reduce(
     (total, item) => total + (item.incoming ? item.amount : -item.amount),
     0,
   );
+  const recentTransferCount = history.filter((item) => item.type === 'TRANSFER').length;
+  const lastExternalCounterparty =
+    history.find((item) => item.counterpartyEmail)?.counterpartyEmail ??
+    'system bootstrap';
 
   return (
     <div className="page-surface min-h-screen">
@@ -130,28 +94,25 @@ export function AccountDashboard({ overview }: AccountDashboardProps) {
                 </h1>
                 <p className="max-w-[52rem] text-[clamp(1.2rem,2.5vw,1.95rem)] leading-[1.45] tracking-[-0.05em] text-[#0A0A0A]/52">
                   High-precision balances, a single personal partition, and a
-                  live receipt roll. Every amount aligns because every bootstrap
-                  write is recorded.
+                  live receipt roll. Every amount aligns because every posting
+                  is written before the surface reads it.
                 </p>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                type="button"
-                disabled
-                className="key-press mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-6 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-100"
+              <a
+                href="#action-console"
+                className="key-press mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-6 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A]"
               >
-                <TransferIcon className="h-4 w-4" />
-                Transfer
-              </button>
+                Open actions
+              </a>
 
               <a
-                href="#receipt-roll"
+                href="#transaction-detail-panel"
                 className="mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] px-6 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] transition-colors duration-150 hover:bg-[#FFFFFF]"
               >
                 Transaction details
-                <ArrowUpRightIcon className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>
@@ -183,10 +144,10 @@ export function AccountDashboard({ overview }: AccountDashboardProps) {
                   <div className="mt-8 grid gap-4 sm:grid-cols-2">
                     <div className="border border-[#0A0A0A] bg-[#F4F3EF]/70 px-4 py-4">
                       <div className="mono-ui text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/55">
-                        Net flow
+                        Recent flow
                       </div>
                       <div className="mono-ui mt-4 text-[1.45rem] font-semibold tracking-[-0.05em] text-[#0A0A0A]">
-                        + {formatCurrencyFromPence(netFlow)}
+                        {formatSignedCurrencyFromPence(visibleFlow)}
                       </div>
                     </div>
 
@@ -206,54 +167,7 @@ export function AccountDashboard({ overview }: AccountDashboardProps) {
                   </p>
                 </div>
 
-                <div className="border border-[#0A0A0A] bg-[rgba(255,255,255,0.62)] p-5">
-                  <div className="mono-ui flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/65">
-                    <span>Quick actions</span>
-                    <span>live</span>
-                  </div>
-
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
-                    <button
-                      type="button"
-                      disabled
-                      className="mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[rgba(255,255,255,0.82)] px-4 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-100"
-                    >
-                      <ArrowRightIcon className="h-3.5 w-3.5 rotate-[-45deg]" />
-                      Deposit
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled
-                      className="mono-ui inline-flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[rgba(255,255,255,0.82)] px-4 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-100"
-                    >
-                      <ArrowUpRightIcon className="h-3.5 w-3.5" />
-                      Withdraw
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled
-                    className="key-press mono-ui mt-3 inline-flex w-full items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-4 py-4 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A] disabled:cursor-not-allowed disabled:opacity-100"
-                  >
-                    <TransferIcon className="h-4 w-4" />
-                    Transfer
-                  </button>
-
-                  <div className="mt-5 h-px w-full bg-[#0A0A0A]/35" />
-
-                  <div className="mt-5 space-y-3 text-[15px] leading-7 text-[#0A0A0A]/72">
-                    <p>
-                      The bootstrap account is live and tied to{' '}
-                      <span className="mono-ui text-[#0A0A0A]">{overview.email}</span>.
-                    </p>
-                    <p>
-                      Funds movement routes are the next backend milestone, so
-                      the action rail is intentionally staged but inactive.
-                    </p>
-                  </div>
-                </div>
+                <AccountActionConsole currentEmail={overview.email} />
               </div>
 
               <div className="border-t border-[#0A0A0A] p-6">
@@ -316,7 +230,11 @@ export function AccountDashboard({ overview }: AccountDashboardProps) {
                           <Icon className="h-4 w-4" />
                         </div>
                         <div className="mt-5 text-[15px] leading-7 text-[#0A0A0A]/72">
-                          {card.value}
+                          {card.label === 'ROLL WINDOW'
+                            ? `${history.length} entries loaded`
+                            : card.label === 'TRANSFER BUS'
+                              ? `${recentTransferCount} transfer events`
+                              : lastExternalCounterparty}
                         </div>
                       </div>
                     );
@@ -325,73 +243,12 @@ export function AccountDashboard({ overview }: AccountDashboardProps) {
               </div>
             </section>
 
-            <aside
-              id="receipt-roll"
-              className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.52)] backdrop-blur-[2px]"
-            >
-              <div className="mono-ui flex items-center justify-between gap-3 border-b border-[#0A0A0A] px-5 py-4 text-[12px] uppercase tracking-[0.1em] text-[#0A0A0A]">
-                <div className="flex items-center gap-3">
-                  <span className="h-2.5 w-2.5 rounded-full border border-[#0A0A0A] bg-[#C7F000]" />
-                  <span>The receipt roll</span>
-                </div>
-                <span className="text-[#0A0A0A]/65">
-                  entries / surface: {ledgerLines.length}
-                </span>
-              </div>
-
-              <div className="mono-ui flex items-center justify-between gap-4 border-b border-[#0A0A0A] px-5 py-4 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/72">
-                <span>Status</span>
-                <span>Live</span>
-              </div>
-
-              <div className="relative h-[42rem] overflow-hidden p-4">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-[#F4F3EF] to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#F4F3EF] to-transparent" />
-
-                <div className={shouldAnimate ? 'ledger-roll-track space-y-3' : 'space-y-3'}>
-                  {rollingLines.map((line, index) => (
-                    <div
-                      key={`${line.id}-${index}`}
-                      className="border border-[#0A0A0A] bg-[rgba(255,255,255,0.7)] px-4 py-4"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <span
-                          className={[
-                            'mono-ui text-[12px] font-medium uppercase tracking-[0.06em]',
-                            line.muted
-                              ? 'text-[#3e8b78]'
-                              : line.positive
-                                ? 'text-[#167c5a]'
-                                : 'text-[#0A0A0A]/78',
-                          ].join(' ')}
-                        >
-                          {line.amount}
-                        </span>
-                        <span className="mono-ui text-[12px] uppercase tracking-[0.08em] text-[#0A0A0A]/72">
-                          {line.label}
-                        </span>
-                      </div>
-                      <div className="mono-ui mt-3 text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A]/42">
-                        {line.meta}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#0A0A0A] px-5 py-4 text-[14px] leading-6 text-[#0A0A0A]/65">
-                <p>
-                  Tip: the opening deposit is a real transaction entry, so the
-                  balance and history stay aligned from day one.
-                </p>
-                <a
-                  href="#"
-                  className="mono-ui text-[11px] uppercase tracking-[0.12em] text-[#0A0A0A] underline underline-offset-4"
-                >
-                  Open details
-                </a>
-              </div>
-            </aside>
+            <AccountTransactionSurface
+              history={history}
+              accountCreatedAt={overview.account.createdAt}
+              email={overview.email}
+              initialTransactionDetail={initialTransactionDetail}
+            />
           </section>
         </main>
       </div>

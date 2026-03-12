@@ -1,10 +1,17 @@
 import { AccountDashboard } from '@/components/account/AccountDashboard';
-import { getAccountOverview } from '@/lib/account/account';
+import {
+  getAccountOverview,
+  getAccountTransactionDetail,
+  getAccountTransactions,
+} from '@/lib/account/account';
 import { requireAuthenticatedSession } from '@/lib/auth/session';
 
 export default async function Account() {
   const session = await requireAuthenticatedSession();
-  const overview = await getAccountOverview();
+  const [overview, transactionHistory] = await Promise.all([
+    getAccountOverview(),
+    getAccountTransactions(),
+  ]);
 
   if (!overview) {
     return (
@@ -35,5 +42,16 @@ export default async function Account() {
     );
   }
 
-  return <AccountDashboard overview={overview} />;
+  const history = transactionHistory ?? overview.activity;
+  const initialTransactionDetail = history[0]
+    ? await getAccountTransactionDetail(history[0].id)
+    : null;
+
+  return (
+    <AccountDashboard
+      overview={overview}
+      history={history}
+      initialTransactionDetail={initialTransactionDetail}
+    />
+  );
 }
