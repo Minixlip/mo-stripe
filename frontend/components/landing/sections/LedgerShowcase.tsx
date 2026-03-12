@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { getCurrentSession } from '@/lib/auth/session';
 import { accounts, transactions, utilityCards } from '../data';
 import {
   ArrowRightIcon,
@@ -9,8 +11,14 @@ import {
   UtilityCard,
 } from '../ui';
 
-export function LedgerShowcase() {
+export async function LedgerShowcase() {
+  const session = await getCurrentSession();
   const rollingTransactions = [...transactions, ...transactions];
+  const actionBaseHref = session ? '/account' : '/login';
+  const depositHref = `${actionBaseHref}${session ? '?action=deposit#action-console' : ''}`;
+  const withdrawHref = `${actionBaseHref}${session ? '?action=withdraw#action-console' : ''}`;
+  const transferHref = `${actionBaseHref}${session ? '?action=transfer#action-console' : ''}`;
+  const ledgerHref = `${actionBaseHref}${session ? '#receipt-roll' : ''}`;
 
   return (
     <section
@@ -64,14 +72,14 @@ export function LedgerShowcase() {
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <ButtonLink
-              href="#"
+              href={depositHref}
               icon={<ArrowUpRightIcon className="h-3.5 w-3.5" />}
               variant="secondary"
             >
               Deposit
             </ButtonLink>
             <ButtonLink
-              href="#"
+              href={withdrawHref}
               icon={<ArrowRightIcon className="h-3.5 w-3.5 rotate-[-45deg]" />}
               variant="secondary"
             >
@@ -79,23 +87,23 @@ export function LedgerShowcase() {
             </ButtonLink>
           </div>
 
-          <a
-            href="#"
+          <Link
+            href={transferHref}
             className="key-press mono-ui mt-4 flex items-center justify-center gap-3 border border-[#0A0A0A] bg-[#C7F000] px-4 py-3 text-[13px] uppercase tracking-[0.12em] text-[#0A0A0A]"
           >
             <TransferIcon className="h-4 w-4" />
             Transfer
-          </a>
+          </Link>
 
           <div className="mt-4 border border-[#0A0A0A] bg-[#F4F3EF]/80 p-4">
             <div className="mono-ui flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.12em]">
               <span className="text-[#0A0A0A]/60">ACCOUNTS</span>
-              <a
-                href="#"
-                className="text-[#0A0A0A]/80 underline-offset-4 hover:underline"
+              <span
+                aria-disabled="true"
+                className="cursor-default border border-[#0A0A0A] bg-[#FFFFFF]/55 px-2 py-1 text-[#0A0A0A]/48"
               >
-                + new
-              </a>
+                locked in v1
+              </span>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -172,12 +180,12 @@ export function LedgerShowcase() {
 
           <p className="mono-ui mt-4 text-[11px] leading-6 uppercase tracking-[0.08em] text-[#0A0A0A]/65">
             Tip: numbers use tabular numerals for perfect alignment.{' '}
-            <a
-              href="#"
+            <Link
+              href={ledgerHref}
               className="text-[#0A0A0A] underline underline-offset-4"
             >
-              View sample ledger
-            </a>
+              Open live ledger
+            </Link>
             .
           </p>
         </div>

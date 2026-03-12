@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, useTransition } from 'react';
 import {
   ArrowRightIcon,
   ArrowUpRightIcon,
@@ -16,6 +16,14 @@ type ActionMode = 'deposit' | 'withdraw' | 'transfer';
 type AccountActionConsoleProps = {
   currentEmail: string;
 };
+
+function getActionMode(value: string | null): ActionMode {
+  if (value === 'deposit' || value === 'withdraw' || value === 'transfer') {
+    return value;
+  }
+
+  return 'deposit';
+}
 
 function getErrorMessage(payload: unknown, fallbackMessage: string) {
   if (typeof payload === 'object' && payload !== null) {
@@ -67,12 +75,18 @@ export function AccountActionConsole({
   currentEmail,
 }: AccountActionConsoleProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<ActionMode>('deposit');
+  const searchParams = useSearchParams();
+  const searchMode = getActionMode(searchParams.get('action'));
+  const [mode, setMode] = useState<ActionMode>(searchMode);
   const [amount, setAmount] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setMode(searchMode);
+  }, [searchMode]);
 
   const config = actionConfig[mode];
 
