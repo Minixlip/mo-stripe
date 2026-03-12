@@ -8,7 +8,7 @@ import {
 
 export function HeroColumn() {
   return (
-    <div className="flex min-h-full flex-col gap-6 lg:gap-8">
+    <div className="flex min-h-full min-w-0 flex-col gap-6 lg:gap-8">
       <div className="space-y-5 lg:space-y-6 lg:pt-4">
         <div className="mono-ui inline-flex items-center gap-6 border border-[#0A0A0A] bg-[rgba(255,255,255,0.42)] px-4 py-3 text-[11px] uppercase tracking-[0.14em] text-[#0A0A0A]/80">
           <span>ARCHITECTURAL LEDGER</span>

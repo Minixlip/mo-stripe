@@ -15,7 +15,7 @@ export function LedgerShowcase() {
   return (
     <section
       aria-label="Architectural ledger preview"
-      className="overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]"
+      className="w-full min-w-0 overflow-hidden border border-[#0A0A0A] bg-[rgba(255,255,255,0.5)] backdrop-blur-[2px]"
     >
       <div className="mono-ui flex flex-wrap items-center justify-between gap-3 border-b border-[#0A0A0A] px-4 py-4 text-[12px] uppercase tracking-[0.08em]">
         <div className="flex items-center gap-3 text-[#0A0A0A]">
@@ -29,8 +29,8 @@ export function LedgerShowcase() {
         </div>
       </div>
 
-      <div className="grid gap-0 lg:grid-cols-[minmax(390px,0.96fr)_minmax(460px,1.04fr)] 2xl:grid-cols-[minmax(450px,0.98fr)_minmax(560px,1.02fr)]">
-        <div className="border-b border-[#0A0A0A] p-4 lg:border-b-0 lg:border-r">
+      <div className="grid gap-0 lg:grid-cols-[minmax(0,0.86fr)_minmax(0,1.14fr)]">
+        <div className="min-w-0 border-b border-[#0A0A0A] p-4 lg:border-b-0 lg:border-r">
           <div className="relative border border-[#0A0A0A] bg-[#F4F3EF]/80 p-5">
             <div className="absolute right-5 top-5">
               <span className="mono-ui inline-flex items-center gap-2 border border-[#0A0A0A] bg-[#FFFFFF] px-3 py-2 text-[11px] uppercase tracking-[0.1em]">
@@ -119,7 +119,7 @@ export function LedgerShowcase() {
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="min-w-0 p-4">
           <div className="mono-ui mb-4 flex flex-wrap items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em]">
             <span className="text-[#0A0A0A]/80">THE RECEIPT ROLL</span>
             <span className="flex items-center gap-2 text-[#0A0A0A]/80">
