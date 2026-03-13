@@ -124,8 +124,10 @@ npm install
 Create `frontend/.env.local`:
 
 ```env
-NEXT_PUBLIC_AUTH_API_URL=http://localhost:4000
+AUTH_API_URL=http://localhost:4000
 ```
+
+`NEXT_PUBLIC_AUTH_API_URL` is still supported as a fallback, but the frontend now prefers the server-only `AUTH_API_URL` because Vercel proxies session-aware requests through same-origin `/api` routes.
 
 Start the frontend:
 

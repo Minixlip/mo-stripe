@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation';
 import type { ActionMode } from './AccountActionConsole';
 import { AccountDialog } from './AccountDialog';
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
-
 type AccountActionModalProps = {
   currentEmail: string;
   mode: ActionMode;
@@ -117,7 +114,7 @@ export function AccountActionModal({
         setRequestSignature(nextRequestSignature);
         setIdempotencyKey(nextIdempotencyKey);
 
-        const response = await fetch(`${AUTH_API_URL}${config.endpoint}`, {
+        const response = await fetch(`/api${config.endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

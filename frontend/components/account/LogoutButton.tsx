@@ -3,8 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 
-const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
-
 type LogoutButtonProps = {
   compact?: boolean;
 };
@@ -19,7 +17,7 @@ export function LogoutButton({ compact = false }: LogoutButtonProps) {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`${AUTH_API_URL}/logout`, {
+        const response = await fetch('/api/auth/logout', {
           method: 'POST',
           credentials: 'include',
         });

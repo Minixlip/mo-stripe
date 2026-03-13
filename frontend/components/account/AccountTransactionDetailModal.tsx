@@ -11,9 +11,6 @@ import {
   maskAccountId,
 } from './accountDisplay';
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
-
 type AccountTransactionDetailModalProps = {
   open: boolean;
   transactionId: string | null;
@@ -114,13 +111,10 @@ export function AccountTransactionDetailModal({
 
     void (async () => {
       try {
-        const response = await fetch(
-          `${AUTH_API_URL}/account/transactions/${transactionId}`,
-          {
-            credentials: 'include',
-            cache: 'no-store',
-          },
-        );
+        const response = await fetch(`/api/account/transactions/${transactionId}`, {
+          credentials: 'include',
+          cache: 'no-store',
+        });
 
         const payload = await response.json().catch(() => null);
 

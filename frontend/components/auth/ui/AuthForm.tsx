@@ -6,8 +6,6 @@ import { useState, useTransition } from 'react';
 import type { AuthContent, AuthMode } from '../types';
 import { AuthField } from './AuthField';
 
-const AUTH_API_URL = process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
-
 type AuthFormProps = {
   content: AuthContent;
   mode: AuthMode;
@@ -34,7 +32,8 @@ export function AuthForm({ content, mode }: AuthFormProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const endpoint = mode === 'login' ? '/login' : '/register';
+  const endpoint =
+    mode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,7 +54,7 @@ export function AuthForm({ content, mode }: AuthFormProps) {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`${AUTH_API_URL}${endpoint}`, {
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

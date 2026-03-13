@@ -14,9 +14,6 @@ import {
   maskAccountId,
 } from './accountDisplay';
 
-const AUTH_API_URL =
-  process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://localhost:4000';
-
 type AccountStatementModalProps = {
   open: boolean;
   defaultMonth: string;
@@ -194,7 +191,7 @@ export function AccountStatementModal({
 
       try {
         const response = await fetch(
-          `${AUTH_API_URL}/account/statements/monthly?month=${selectedMonth}`,
+          `/api/account/statements/monthly?month=${selectedMonth}`,
           {
             credentials: 'include',
             cache: 'no-store',

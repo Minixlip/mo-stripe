@@ -17,5 +17,7 @@ npm run build
 Create `frontend/.env.local`:
 
 ```env
-NEXT_PUBLIC_AUTH_API_URL=http://localhost:4000
+AUTH_API_URL=http://localhost:4000
 ```
+
+`NEXT_PUBLIC_AUTH_API_URL` is still supported as a fallback, but `AUTH_API_URL` is preferred now that the frontend proxies auth and account writes through same-origin `/api` routes.
