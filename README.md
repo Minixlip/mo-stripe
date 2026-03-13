@@ -158,7 +158,7 @@ GitHub Actions provisions Postgres, applies migrations, runs backend integration
 3. Move abuse protection to a distributed store or edge layer for multi-instance deployment.
 4. Deploy the frontend and backend publicly with metrics and alerting.
 
-## What Employers Should Notice
+## Why I built this?
 
 This project is meant to show more than framework familiarity. It shows that I can reason about:
 
