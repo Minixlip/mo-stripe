@@ -5,7 +5,7 @@ export const docsSignals = [
   { label: 'Backend', value: 'Node.js, Express, TypeScript, Prisma ORM' },
   { label: 'Database', value: 'PostgreSQL on Supabase' },
   { label: 'Auth', value: 'bcrypt, JWT, httpOnly cookie, protected middleware' },
-  { label: 'Ops', value: 'request ids, structured logs, health checks, CI-backed tests' },
+  { label: 'Ops', value: 'request ids, structured logs, health checks, rate limits, CI-backed tests' },
 ] as const;
 
 export const quickStartSteps = [
@@ -19,7 +19,7 @@ export const quickStartSteps = [
     label: 'Configure environment',
     command: '.env',
     detail:
-      'Set the backend JWT secret, the direct Postgres URL, optional CORS origin, and the frontend API base URL for cookie-backed requests.',
+      'Set the backend JWT secret, direct Postgres URL, optional CORS origin, optional proxy depth via `TRUST_PROXY`, and the frontend API base URL for cookie-backed requests.',
   },
   {
     label: 'Apply database migrations',
@@ -117,6 +117,7 @@ export const invariants = [
   'Financial writes require an `Idempotency-Key` and replay the original response on safe retries.',
   'Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.',
   'Balances are derived from ledger postings rather than updated as a mutable account snapshot.',
+  'Login, registration, statement generation, and money-moving routes are rate-limited.',
   'Withdrawals fail when funds are insufficient.',
   'Transfers commit debit, credit, and ledger write together.',
   'Opening balances are recorded as transactions, not hidden balance mutations.',
@@ -168,7 +169,7 @@ export const currentCapabilities = [
   {
     label: 'What works now',
     detail:
-      'Registration, login, logout, protected session lookup, account summary, monthly statements, CSV/JSON exports, transaction history, deposit, withdrawal, transfer, transaction detail inspection, request ids, and health checks.',
+      'Registration, login, logout, protected session lookup, account summary, monthly statements, CSV/JSON exports, transaction history, deposit, withdrawal, transfer, transaction detail inspection, request ids, health checks, and route-specific rate limiting.',
   },
   {
     label: 'What proves quality',
@@ -183,6 +184,6 @@ export const currentCapabilities = [
   {
     label: 'What should come next',
     detail:
-      'Stronger token revocation, reversals, rate limiting, and a public deployment target.',
+      'Stronger token revocation, reversals, a distributed rate-limit store for multi-instance deployments, and a public deployment target.',
   },
 ] as const;

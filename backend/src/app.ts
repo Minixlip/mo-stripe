@@ -13,11 +13,30 @@ import sessionRoute from './routes/session.routes.js';
 
 const app = express();
 const corsOrigin = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+const trustProxySetting = process.env.TRUST_PROXY;
 
-app.set('trust proxy', true);
+function getTrustProxyValue() {
+  if (
+    trustProxySetting === undefined ||
+    trustProxySetting === '0' ||
+    trustProxySetting === 'false'
+  ) {
+    return false;
+  }
+
+  const numericValue = Number(trustProxySetting);
+
+  if (Number.isInteger(numericValue) && numericValue >= 1) {
+    return numericValue;
+  }
+
+  return 1;
+}
+
+app.set('trust proxy', getTrustProxyValue());
 
 app.use(attachRequestContext);
-app.use(express.json());
+app.use(express.json({ limit: '16kb' }));
 app.use(cookieParser());
 
 app.use(

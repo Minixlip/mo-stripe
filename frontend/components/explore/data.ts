@@ -108,7 +108,7 @@ export const scopeNotes = [
   {
     label: 'Tradeoff',
     detail:
-      'It is not a full banking core yet. The app now writes append-only ledger postings and derives balances from them, but business ownership models and reversals are still future steps.',
+      'It is not a full banking core yet. The app now writes append-only ledger postings, derives balances from them, and rate-limits sensitive routes, but business ownership models and reversals are still future steps.',
   },
 ] as const;
 
@@ -196,6 +196,11 @@ export const securityPractices = [
       'Deposit, withdrawal, and transfer requests require an idempotency key so the backend can replay the original result instead of reapplying the mutation.',
   },
   {
+    label: 'Abuse Protection',
+    detail:
+      'Login, registration, statement generation, and money-moving routes are rate-limited, and oversized JSON payloads are rejected before they reach the service layer.',
+  },
+  {
     label: 'Integration Tests',
     detail:
       'The backend suite exercises auth cookies, write idempotency, overdraft prevention, balanced transfer postings, and transaction ownership over real HTTP routes.',
@@ -255,9 +260,9 @@ export const roadmapItems = [
       'Logout currently clears the cookie only. A stronger session model would support true revocation and longer-lived refresh tokens.',
   },
   {
-    title: 'Rate limiting and abuse protection',
+    title: 'Distributed abuse protection',
     detail:
-      'The write path is now test-covered, but auth and money-moving routes still need rate limiting and abuse controls for a more production-like posture.',
+      'The app now enforces in-process rate limits. The stronger next step for production is a shared store or edge layer so abuse controls remain consistent across multiple instances.',
   },
   {
     title: 'Reversals and reconciliation',

@@ -33,10 +33,19 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     error.status === 400 &&
     'body' in error
       ? 400
+      : error &&
+            typeof error === 'object' &&
+            'status' in error &&
+            error.status === 413
+        ? 413
       : 500;
 
   const message =
-    statusCode === 400 ? 'Invalid JSON payload.' : 'Internal server error.';
+    statusCode === 400
+      ? 'Invalid JSON payload.'
+      : statusCode === 413
+        ? 'Payload too large.'
+        : 'Internal server error.';
 
   logError('unhandled_request_error', {
     requestId: req.requestId ?? null,

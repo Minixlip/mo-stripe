@@ -11,7 +11,7 @@ The purpose of the project is not only to build a polished interface, but to lea
 - integration-tested financial invariants
 - explicit tradeoffs and roadmap thinking
 
-The project currently supports one personal account per user, cookie-backed authentication, automatic account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, transaction detail inspection, append-only ledger postings, idempotent financial writes, integration tests, and backend observability.
+The project currently supports one personal account per user, cookie-backed authentication, automatic account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, transaction detail inspection, append-only ledger postings, idempotent financial writes, rate limiting on sensitive routes, integration tests, and backend observability.
 
 ## What This Project Demonstrates
 
@@ -22,6 +22,7 @@ The project currently supports one personal account per user, cookie-backed auth
 - atomic transfer execution using Prisma database transactions
 - append-only debit and credit ledger postings for financial mutations
 - idempotency-key protection for retry-safe financial writes
+- route-specific rate limiting for login, registration, statement generation, and money-moving endpoints
 - opening balances recorded as real transactions so balance and history stay aligned
 - backend integration tests around auth, idempotency, overdrafts, and transfer postings
 - GitHub Actions CI for backend tests plus frontend lint/build checks
@@ -142,6 +143,7 @@ These are the main invariants in the current version:
 - Financial write routes require an `Idempotency-Key` and replay the stored response when the same request is retried.
 - Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.
 - Balances are derived from ledger postings rather than stored as a mutable account snapshot.
+- Login, registration, statement generation, and money-moving routes are rate-limited.
 - Withdrawals fail if the account balance is too low.
 - Transfers are atomic: debit, credit, and transaction write share one database transaction.
 - The opening balance is recorded as a transaction entry, not just a silent balance mutation.
@@ -180,6 +182,7 @@ All financial write endpoints require an `Idempotency-Key` header.
 - Every response includes an `X-Request-Id` header.
 - Backend requests are logged as structured JSON lines with method, path, status, duration, and request id.
 - `GET /health` performs a lightweight database ping and returns service status.
+- Sensitive routes return `429` responses with retry metadata when rate limits are exceeded.
 
 ## App Routes
 
@@ -209,6 +212,7 @@ JWT_SECRET_KEY=replace_with_a_long_random_secret
 PORT=4000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:3000
+TRUST_PROXY=1
 ```
 
 Apply migrations and optional seed data:
@@ -280,7 +284,7 @@ mo-stripe/
 
 - No refresh-token or token-revocation strategy
 - No reversal or reconciliation workflows yet
-- No rate limiting or abuse protection yet
+- Rate limiting currently uses the in-process memory store, so a multi-instance deployment would need a shared store such as Redis
 - No multi-account or business-entity model yet
 - No public deployment configuration in the repo yet
 
@@ -290,7 +294,7 @@ The next meaningful upgrades would be:
 
 1. compensating entries for reversals and refunds
 2. stronger session revocation and refresh-token architecture
-3. rate limiting and abuse protection on auth and money-moving routes
+3. a distributed rate-limit store and edge abuse protection for multi-instance deployment
 4. more formal account/entity ownership models for business use cases
 5. public deployment plus metrics and alerting around the current health surface
 
