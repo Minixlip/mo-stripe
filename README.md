@@ -14,7 +14,7 @@ The project focuses on:
 ## Product Preview
 
 <p>
-  <img src="docs/assets/landingPage1.png" alt="Landing page preview" width="49%">
+  <img src="docs/assets/LandingPage1.png" alt="Landing page preview" width="49%">
   <img src="docs/assets/landingPage2.png" alt="Landing page preview" width="49%">
 </p>
 <p>
