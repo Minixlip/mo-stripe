@@ -15,7 +15,7 @@ The project focuses on:
 
 <p>
   <img src="docs/assets/LandingPage1.png" alt="Landing page preview" width="49%">
-  <img src="docs/assets/landingPage2.png" alt="Landing page preview" width="49%">
+  <img src="docs/assets/LandingPage2.png" alt="Landing page preview" width="49%">
 </p>
 <p>
   <img src="docs/assets/LedgerPreview.png" alt="Account dashboard preview" width="100%">
