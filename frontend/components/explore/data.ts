@@ -108,7 +108,7 @@ export const scopeNotes = [
   {
     label: 'Tradeoff',
     detail:
-      'It is not a full banking core yet. The app now writes append-only ledger postings, but business ownership models, reversals, and balance derivation purely from postings are still future steps.',
+      'It is not a full banking core yet. The app now writes append-only ledger postings and derives balances from them, but business ownership models and reversals are still future steps.',
   },
 ] as const;
 
@@ -135,7 +135,7 @@ export const requestFlow = [
     step: '04',
     title: 'Database transaction commits',
     detail:
-      'Balance updates, transaction rows, and append-only ledger postings are written together, which prevents partial financial state.',
+      'Transaction rows and append-only ledger postings are written together, and balance checks are derived from those postings inside the same transaction.',
   },
   {
     step: '05',
@@ -150,14 +150,14 @@ export const moneyFlowCards = [
     id: 'deposit',
     title: 'Deposit',
     detail:
-      'Deposit requests convert GBP strings to pence, increment the account balance, create a DEPOSIT transaction row, and append a matching CREDIT posting.',
+      'Deposit requests convert GBP strings to pence, create a DEPOSIT transaction row, append a matching CREDIT posting, and return the posting-derived balance.',
     notes: ['positive amount required', 'idempotency enforced', 'credit posting written'],
   },
   {
     id: 'withdraw',
     title: 'Withdraw',
     detail:
-      'Withdrawals use a guarded update so the balance only decrements when sufficient funds are available at commit time, then append a DEBIT posting.',
+      'Withdrawals lock the account row, derive the current balance from postings, reject overdrafts, and then append the DEBIT posting.',
     notes: ['no overdraft', 'debit posting written', '409 on insufficient funds'],
   },
   {
@@ -253,11 +253,6 @@ export const roadmapItems = [
     title: 'Refresh-token revocation',
     detail:
       'Logout currently clears the cookie only. A stronger session model would support true revocation and longer-lived refresh tokens.',
-  },
-  {
-    title: 'Posting-derived balances',
-    detail:
-      'Each money movement already writes append-only debit and credit postings. The stronger next step is to derive balances directly from those postings instead of keeping a balance snapshot.',
   },
   {
     title: 'Rate limiting and abuse protection',

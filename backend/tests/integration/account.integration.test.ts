@@ -44,6 +44,22 @@ async function registerUser(email: string) {
   return agent;
 }
 
+async function getLedgerBalance(accountId: string) {
+  const postingsByDirection = await prisma.ledgerPosting.groupBy({
+    by: ['direction'],
+    where: { accountId },
+    _sum: {
+      amount: true,
+    },
+  });
+
+  return postingsByDirection.reduce((total, posting) => {
+    const amount = posting._sum.amount ?? 0;
+
+    return posting.direction === 'CREDIT' ? total + amount : total - amount;
+  }, 0);
+}
+
 async function getUserAccount(email: string) {
   const user = await prisma.user.findUnique({
     where: { email },
@@ -52,7 +68,6 @@ async function getUserAccount(email: string) {
       account: {
         select: {
           id: true,
-          balance: true,
         },
       },
     },
@@ -62,7 +77,10 @@ async function getUserAccount(email: string) {
     throw new Error(`Account not found for ${email}`);
   }
 
-  return user.account;
+  return {
+    ...user.account,
+    balance: await getLedgerBalance(user.account.id),
+  };
 }
 
 describe('Account integration flows', () => {

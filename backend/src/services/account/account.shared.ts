@@ -24,6 +24,8 @@ function getOwnedLedgerPosting(
   return ownedLedgerPosting;
 }
 
+type PrismaLedgerClient = Prisma.TransactionClient | typeof prisma;
+
 export function getAccountTransactionSelect(accountId: string) {
   return Prisma.validator<Prisma.TransactionSelect>()({
     id: true,
@@ -120,15 +122,69 @@ export function getAccountTransactionDetailSelect(accountId: string) {
   });
 }
 
+function getSignedPostingAmount(posting: BalanceEffectRecord) {
+  return posting.direction === 'CREDIT' ? posting.amount : -posting.amount;
+}
+
+export async function getLedgerBalance(
+  client: PrismaLedgerClient,
+  accountId: string,
+  range?: {
+    gte?: Date;
+    lt?: Date;
+  },
+) {
+  const where: Prisma.LedgerPostingWhereInput = { accountId };
+
+  if (range?.gte || range?.lt) {
+    const createdAt: Prisma.DateTimeFilter = {};
+
+    if (range.gte) {
+      createdAt.gte = range.gte;
+    }
+
+    if (range.lt) {
+      createdAt.lt = range.lt;
+    }
+
+    where.createdAt = createdAt;
+  }
+
+  const postingsByDirection = await client.ledgerPosting.groupBy({
+    by: ['direction'],
+    where,
+    _sum: {
+      amount: true,
+    },
+  });
+
+  return getNetBalanceEffect(
+    postingsByDirection.map((posting) => ({
+      amount: posting._sum.amount ?? 0,
+      direction: posting.direction,
+    })),
+  );
+}
+
 export async function getUserAccount(userId: string) {
-  return prisma.account.findUnique({
+  const account = await prisma.account.findUnique({
     where: { userId },
     select: {
       id: true,
-      balance: true,
       createdAt: true,
     },
   });
+
+  if (!account) {
+    return null;
+  }
+
+  const balance = await getLedgerBalance(prisma, account.id);
+
+  return {
+    ...account,
+    balance,
+  };
 }
 
 export async function getUserAccountId(userId: string) {
@@ -212,13 +268,10 @@ export function getMonthRange(month: string) {
 export function getNetBalanceEffect(
   transactions: BalanceEffectRecord[],
 ) {
-  return transactions.reduce((total, transaction) => {
-    if (transaction.direction === 'CREDIT') {
-      return total + transaction.amount;
-    }
-
-    return total - transaction.amount;
-  }, 0);
+  return transactions.reduce(
+    (total, transaction) => total + getSignedPostingAmount(transaction),
+    0,
+  );
 }
 
 export function buildMonthlyStatementSummary(

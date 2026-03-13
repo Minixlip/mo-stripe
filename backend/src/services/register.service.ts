@@ -38,7 +38,6 @@ export const processRegister = async (
       const account = await tx.account.create({
         data: {
           userId: user.id,
-          balance: INITIAL_ACCOUNT_BALANCE_PENCE,
         },
       });
 

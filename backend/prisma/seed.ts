@@ -12,31 +12,40 @@ async function seed() {
     users.map(async ({ email, password }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const user = await prisma.user.upsert({
-        where: { email },
-        update: { password: hashedPassword },
-        create: { email, password: hashedPassword },
-      });
-
-      const existingAccount = await prisma.account.findUnique({
-        where: { userId: user.id },
-      });
-
-      if (existingAccount) {
-        await prisma.account.update({
-          where: { id: existingAccount.id },
-          data: { balance: INITIAL_ACCOUNT_BALANCE_PENCE },
-        });
-        return;
-      }
-
       await prisma.$transaction(async (tx) => {
-        const account = await tx.account.create({
-          data: {
-            userId: user.id,
-            balance: INITIAL_ACCOUNT_BALANCE_PENCE,
+        const user = await tx.user.upsert({
+          where: { email },
+          update: { password: hashedPassword },
+          create: { email, password: hashedPassword },
+        });
+
+        let account = await tx.account.findUnique({
+          where: { userId: user.id },
+          select: {
+            id: true,
           },
         });
+
+        if (!account) {
+          account = await tx.account.create({
+            data: {
+              userId: user.id,
+            },
+            select: {
+              id: true,
+            },
+          });
+        }
+
+        const existingPostingCount = await tx.ledgerPosting.count({
+          where: {
+            accountId: account.id,
+          },
+        });
+
+        if (existingPostingCount > 0) {
+          return;
+        }
 
         const openingTransaction = await tx.transaction.create({
           data: {

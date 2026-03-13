@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import type {
   AccountMutationErrorData,
   AccountMutationResult,
@@ -8,6 +8,7 @@ import type {
   TransferInput,
 } from './account.types.js';
 import { ACCOUNT_MUTATION_OPERATIONS } from './account.types.js';
+import { getLedgerBalance } from './account.shared.js';
 import { executeIdempotentRequest } from '../idempotency.service.js';
 
 type MutationExecutionResult = {
@@ -52,15 +53,41 @@ function mapMutationResult(
   };
 }
 
+async function getAccountIdForUser(
+  tx: Prisma.TransactionClient,
+  userId: string,
+) {
+  return tx.account.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+}
+
+async function lockAccountRows(
+  tx: Prisma.TransactionClient,
+  accountIds: string[],
+) {
+  const uniqueSortedIds = [...new Set(accountIds)].sort();
+
+  if (uniqueSortedIds.length === 0) {
+    return;
+  }
+
+  await tx.$queryRaw`
+    SELECT "id"
+    FROM "Account"
+    WHERE "id" IN (${Prisma.join(uniqueSortedIds)})
+    ORDER BY "id"
+    FOR UPDATE
+  `;
+}
+
 async function executeDeposit(
   tx: Prisma.TransactionClient,
   userId: string,
   amount: number,
 ): Promise<MutationExecutionResult> {
-  const account = await tx.account.findUnique({
-    where: { userId },
-    select: { id: true },
-  });
+  const account = await getAccountIdForUser(tx, userId);
 
   if (!account) {
     return {
@@ -70,15 +97,7 @@ async function executeDeposit(
     };
   }
 
-  const updatedAccount = await tx.account.update({
-    where: { id: account.id },
-    data: {
-      balance: {
-        increment: amount,
-      },
-    },
-    select: { balance: true },
-  });
+  await lockAccountRows(tx, [account.id]);
 
   const transaction = await tx.transaction.create({
     data: {
@@ -100,10 +119,12 @@ async function executeDeposit(
     },
   });
 
+  const balance = await getLedgerBalance(tx, account.id);
+
   return {
     success: true,
     statusCode: 201,
-    body: toSuccessBody('Deposit recorded.', updatedAccount.balance),
+    body: toSuccessBody('Deposit recorded.', balance),
   };
 }
 
@@ -112,10 +133,7 @@ async function executeWithdrawal(
   userId: string,
   amount: number,
 ): Promise<MutationExecutionResult> {
-  const account = await tx.account.findUnique({
-    where: { userId },
-    select: { id: true },
-  });
+  const account = await getAccountIdForUser(tx, userId);
 
   if (!account) {
     return {
@@ -125,35 +143,16 @@ async function executeWithdrawal(
     };
   }
 
-  const updated = await tx.account.updateMany({
-    where: {
-      id: account.id,
-      balance: {
-        gte: amount,
-      },
-    },
-    data: {
-      balance: {
-        decrement: amount,
-      },
-    },
-  });
+  await lockAccountRows(tx, [account.id]);
 
-  if (updated.count === 0) {
+  const currentBalance = await getLedgerBalance(tx, account.id);
+
+  if (currentBalance < amount) {
     return {
       success: false,
       statusCode: 409,
       body: toErrorBody('Insufficient funds.'),
     };
-  }
-
-  const updatedAccount = await tx.account.findUnique({
-    where: { id: account.id },
-    select: { balance: true },
-  });
-
-  if (!updatedAccount) {
-    throw new Error('ACCOUNT_BALANCE_LOOKUP_FAILED');
   }
 
   const transaction = await tx.transaction.create({
@@ -179,7 +178,7 @@ async function executeWithdrawal(
   return {
     success: true,
     statusCode: 201,
-    body: toSuccessBody('Withdrawal recorded.', updatedAccount.balance),
+    body: toSuccessBody('Withdrawal recorded.', currentBalance - amount),
   };
 }
 
@@ -197,10 +196,7 @@ async function executeTransfer(
     };
   }
 
-  const senderAccount = await tx.account.findUnique({
-    where: { userId },
-    select: { id: true },
-  });
+  const senderAccount = await getAccountIdForUser(tx, userId);
 
   if (!senderAccount) {
     return {
@@ -229,44 +225,16 @@ async function executeTransfer(
     };
   }
 
-  const updated = await tx.account.updateMany({
-    where: {
-      id: senderAccount.id,
-      balance: {
-        gte: input.amount,
-      },
-    },
-    data: {
-      balance: {
-        decrement: input.amount,
-      },
-    },
-  });
+  await lockAccountRows(tx, [senderAccount.id, recipientAccount.id]);
 
-  if (updated.count === 0) {
+  const senderBalance = await getLedgerBalance(tx, senderAccount.id);
+
+  if (senderBalance < input.amount) {
     return {
       success: false,
       statusCode: 409,
       body: toErrorBody('Insufficient funds.'),
     };
-  }
-
-  await tx.account.update({
-    where: { id: recipientAccount.id },
-    data: {
-      balance: {
-        increment: input.amount,
-      },
-    },
-  });
-
-  const updatedSenderAccount = await tx.account.findUnique({
-    where: { id: senderAccount.id },
-    select: { balance: true },
-  });
-
-  if (!updatedSenderAccount) {
-    throw new Error('ACCOUNT_BALANCE_LOOKUP_FAILED');
   }
 
   const transaction = await tx.transaction.create({
@@ -301,7 +269,7 @@ async function executeTransfer(
   return {
     success: true,
     statusCode: 201,
-    body: toSuccessBody('Transfer completed.', updatedSenderAccount.balance),
+    body: toSuccessBody('Transfer completed.', senderBalance - input.amount),
   };
 }
 

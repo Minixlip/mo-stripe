@@ -80,9 +80,9 @@ export const dataModelCards = [
   {
     title: 'Account',
     points: [
-      'Stores balance in integer pence instead of floating point currency values.',
       'Is created automatically during registration.',
-      'Keeps a balance snapshot while related ledger postings provide the append-only movement history.',
+      'Stores account identity and ownership, while the running balance is derived from append-only ledger postings.',
+      'Avoids mutable balance snapshots so the ledger remains the single source of truth.',
     ],
   },
   {
@@ -98,7 +98,7 @@ export const dataModelCards = [
     points: [
       'Stores append-only debit and credit rows per account effect.',
       'Lets transfer reads show both sides of a movement instead of only one high-level transaction record.',
-      'Is the foundation for a future balance-derived-from-postings model.',
+      'Now acts as the source of truth for derived account balances and monthly statement boundaries.',
     ],
   },
   {
@@ -116,6 +116,7 @@ export const invariants = [
   'Protected routes derive `userId` from auth middleware, not request payloads.',
   'Financial writes require an `Idempotency-Key` and replay the original response on safe retries.',
   'Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.',
+  'Balances are derived from ledger postings rather than updated as a mutable account snapshot.',
   'Withdrawals fail when funds are insufficient.',
   'Transfers commit debit, credit, and ledger write together.',
   'Opening balances are recorded as transactions, not hidden balance mutations.',
@@ -182,6 +183,6 @@ export const currentCapabilities = [
   {
     label: 'What should come next',
     detail:
-      'Balances derived directly from postings, stronger token revocation, reversals, rate limiting, and a public deployment target.',
+      'Stronger token revocation, reversals, rate limiting, and a public deployment target.',
   },
 ] as const;

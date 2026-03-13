@@ -17,7 +17,7 @@ The project currently supports one personal account per user, cookie-backed auth
 
 - JWT authentication stored in an `httpOnly` cookie instead of local storage
 - protected Express routes that derive identity from middleware, not client payloads
-- balances stored in integer pence rather than floating point values
+- transaction amounts and derived balances stored in integer pence rather than floating point values
 - overdraft prevention on withdrawals
 - atomic transfer execution using Prisma database transactions
 - append-only debit and credit ledger postings for financial mutations
@@ -85,7 +85,6 @@ At a high level, requests move through these layers:
 #### Account
 
 - `id`
-- `balance`
 - `createdAt`
 - `userId`
 
@@ -142,6 +141,7 @@ These are the main invariants in the current version:
 - Money is stored in integer minor units.
 - Financial write routes require an `Idempotency-Key` and replay the stored response when the same request is retried.
 - Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.
+- Balances are derived from ledger postings rather than stored as a mutable account snapshot.
 - Withdrawals fail if the account balance is too low.
 - Transfers are atomic: debit, credit, and transaction write share one database transaction.
 - The opening balance is recorded as a transaction entry, not just a silent balance mutation.
@@ -288,12 +288,11 @@ mo-stripe/
 
 The next meaningful upgrades would be:
 
-1. deriving balances entirely from append-only ledger postings
-2. compensating entries for reversals and refunds
-3. stronger session revocation and refresh-token architecture
-4. rate limiting and abuse protection on auth and money-moving routes
-5. more formal account/entity ownership models for business use cases
-6. public deployment plus metrics and alerting around the current health surface
+1. compensating entries for reversals and refunds
+2. stronger session revocation and refresh-token architecture
+3. rate limiting and abuse protection on auth and money-moving routes
+4. more formal account/entity ownership models for business use cases
+5. public deployment plus metrics and alerting around the current health surface
 
 ## Why This Matters
 

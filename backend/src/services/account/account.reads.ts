@@ -9,8 +9,8 @@ import {
   buildMonthlyStatementSummary,
   getAccountTransactionDetailSelect,
   getAccountTransactionSelect,
+  getLedgerBalance,
   getMonthRange,
-  getNetBalanceEffect,
   getUserAccount,
   getUserAccountId,
   mapTransactionActivity,
@@ -172,53 +172,41 @@ export const getAccountMonthlyStatement = async (
 
     const { periodStart, periodEnd, periodEndExclusive } = getMonthRange(month);
 
-    const [monthTransactions, laterTransactions] = await prisma.$transaction(
-      async (tx) => {
-        const transactions = await tx.transaction.findMany({
-          where: {
-            ledgerPostings: {
-              some: {
-                accountId: account.id,
-              },
-            },
-            createdAt: {
-              gte: periodStart,
-              lt: periodEndExclusive,
+    const statementWindow = await prisma.$transaction(async (tx) => {
+      const transactions = await tx.transaction.findMany({
+        where: {
+          ledgerPostings: {
+            some: {
+              accountId: account.id,
             },
           },
-          orderBy: { createdAt: 'asc' },
-          select: getAccountTransactionDetailSelect(account.id),
-        });
-
-        const postings = await tx.ledgerPosting.findMany({
-          where: {
-            accountId: account.id,
-            createdAt: {
-              gte: periodEndExclusive,
-            },
+          createdAt: {
+            gte: periodStart,
+            lt: periodEndExclusive,
           },
-          orderBy: { createdAt: 'asc' },
-          select: {
-            amount: true,
-            direction: true,
-          },
-        });
+        },
+        orderBy: { createdAt: 'asc' },
+        select: getAccountTransactionDetailSelect(account.id),
+      });
 
-        return [transactions, postings] as const;
-      },
-    );
+      const openingBalance = await getLedgerBalance(tx, account.id, {
+        lt: periodStart,
+      });
 
-    const statementTransactions = monthTransactions.map((transaction) =>
+      const closingBalance = await getLedgerBalance(tx, account.id, {
+        lt: periodEndExclusive,
+      });
+
+      return {
+        transactions,
+        openingBalance,
+        closingBalance,
+      };
+    });
+
+    const statementTransactions = statementWindow.transactions.map((transaction) =>
       mapTransactionDetail(account.id, transaction),
     );
-    const laterNetEffect = getNetBalanceEffect(laterTransactions);
-    const closingBalance = account.balance - laterNetEffect;
-    const monthNetEffect = statementTransactions.reduce(
-      (total, transaction) =>
-        total + (transaction.incoming ? transaction.amount : -transaction.amount),
-      0,
-    );
-    const openingBalance = closingBalance - monthNetEffect;
 
     return {
       success: true,
@@ -234,8 +222,8 @@ export const getAccountMonthlyStatement = async (
           },
           summary: buildMonthlyStatementSummary(
             statementTransactions,
-            openingBalance,
-            closingBalance,
+            statementWindow.openingBalance,
+            statementWindow.closingBalance,
           ),
           transactions: statementTransactions,
         },

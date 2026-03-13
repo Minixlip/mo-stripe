@@ -40,7 +40,6 @@ model User {
 
 model Account {
   id        String   @id @default(uuid())
-  balance   Int      @default(0)
   createdAt DateTime @default(now())
 
   userId String @unique
