@@ -1,210 +1,89 @@
 # mo-stripe
 
-`mo-stripe` is a simplified fintech-style platform inspired by systems like Stripe and modern banking APIs.
+`mo-stripe` is a fintech-style ledger application built to demonstrate backend engineering decisions that matter in money movement systems.
 
-The purpose of the project is not only to build a polished interface, but to learn and demonstrate backend engineering concepts that matter in money movement systems:
+The project focuses on:
+- cookie-backed JWT authentication
+- idempotent financial writes
+- append-only ledger postings
+- balances derived from postings instead of mutable snapshots
+- monthly statement exports
+- integration-tested invariants, CI, and request-level observability
 
-- authentication boundaries
-- relational data modeling
-- atomic financial writes
-- audit-friendly transaction history
-- integration-tested financial invariants
-- explicit tradeoffs and roadmap thinking
+## Product Preview
 
-The project currently supports one personal account per user, cookie-backed authentication, automatic account bootstrap on registration, deposits, withdrawals, transfers, monthly statements/exports, transaction history, transaction detail inspection, append-only ledger postings, idempotent financial writes, rate limiting on sensitive routes, integration tests, and backend observability.
-
-## What This Project Demonstrates
-
-- JWT authentication stored in an `httpOnly` cookie instead of local storage
-- protected Express routes that derive identity from middleware, not client payloads
-- transaction amounts and derived balances stored in integer pence rather than floating point values
-- overdraft prevention on withdrawals
-- atomic transfer execution using Prisma database transactions
-- append-only debit and credit ledger postings for financial mutations
-- idempotency-key protection for retry-safe financial writes
-- route-specific rate limiting for login, registration, statement generation, and money-moving endpoints
-- opening balances recorded as real transactions so balance and history stay aligned
-- backend integration tests around auth, idempotency, overdrafts, and transfer postings
-- GitHub Actions CI for backend tests plus frontend lint/build checks
-- structured request logging, request IDs, and a health endpoint
-- a Next.js dashboard that reads backend state through authenticated REST endpoints
-
-## Tech Stack
-
-### Frontend
-
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-
-### Backend
-
-- Node.js
-- Express
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Vitest + Supertest for backend integration coverage
-
-### Auth and Data
-
-- bcrypt
-- jsonwebtoken
-- Supabase-hosted Postgres
-
-## Current Product Scope
-
-The current scope is intentionally narrow so the important backend ideas are easier to see.
-
-- Each user has exactly one personal account.
-- Registration creates the user, provisions the account, records the opening transaction, and issues the auth cookie.
-- The opening balance is demo money: `5000 GBP`.
-- The dashboard supports deposit, withdrawal, transfer, monthly statements, CSV/JSON exports, transaction history, and per-transaction detail views.
-
-This is a deliberate product decision. It removes multi-entity complexity early so the project can focus on correctness, ownership, and system design.
+<p>
+  <img src="docs/assets/landing-preview.svg" alt="Landing page preview" width="49%">
+  <img src="docs/assets/dashboard-preview.svg" alt="Account dashboard preview" width="49%">
+</p>
+<p>
+  <img src="docs/assets/statement-preview.svg" alt="Monthly statement export preview" width="100%">
+</p>
 
 ## Architecture
 
-At a high level, requests move through these layers:
+![mo-stripe architecture diagram](docs/assets/architecture-diagram.svg)
 
-1. Next.js frontend sends REST requests with `credentials: "include"`.
-2. Express receives the request and validates input with Zod.
-3. Auth middleware verifies the JWT cookie and resolves the user.
-4. Service-layer functions enforce domain rules.
-5. Prisma persists state into PostgreSQL.
-6. The frontend reads the resulting account summary and transaction history back through authenticated endpoints.
+## Why This Project Is Strong
 
-### Core Models
+- Auth stays server-trusting: JWTs live in `httpOnly` cookies and protected routes derive identity from backend middleware.
+- Money uses integer minor units and append-only debit / credit postings.
+- Deposits, withdrawals, and transfers are atomic and idempotent.
+- Balances and monthly statements are derived from ledger postings.
+- Sensitive routes are rate-limited and oversized payloads are rejected early.
+- Backend quality is backed by integration tests, GitHub Actions CI, request IDs, structured logs, and a health endpoint.
 
-#### User
+## Core Features
 
-- `id`
-- `email`
-- `password`
-- `createdAt`
+- One personal account per user, provisioned automatically on registration
+- Demo opening balance recorded as a real transaction, not a silent mutation
+- Deposit, withdraw, and transfer flows
+- Transaction history and transaction detail views
+- Monthly statement generation with CSV and JSON export
+- Route-specific abuse protection on login, registration, statement generation, and money-moving endpoints
 
-#### Account
+## Stack
 
-- `id`
-- `createdAt`
-- `userId`
-
-#### Transaction
-
-- `id`
-- `amount`
-- `type`
-- `fromAccountId`
-- `toAccountId`
-- `createdAt`
-
-#### LedgerPosting
-
-- `id`
-- `transactionId`
-- `accountId`
-- `amount`
-- `direction`
-- `createdAt`
-
-#### IdempotencyKey
-
-- `id`
-- `userId`
-- `key`
-- `operation`
-- `requestHash`
-- `status`
-- `responseStatus`
-- `responseBody`
-- `createdAt`
-- `completedAt`
-
-## Authentication Model
-
-The auth flow is intentionally server-trusting:
-
-- passwords are hashed with bcrypt
-- login and registration sign a JWT
-- the JWT is stored in an `httpOnly` cookie
-- protected routes verify the cookie and attach trusted identity to the request
-- the frontend does not need to read the token directly
-
-Important limitation:
-
-- logout clears the browser cookie, but this is not full token revocation
-- true revocation would require a stronger session architecture such as token versioning, refresh tokens, or a denylist
-
-## Financial Correctness Rules
-
-These are the main invariants in the current version:
-
-- Money is stored in integer minor units.
-- Financial write routes require an `Idempotency-Key` and replay the stored response when the same request is retried.
-- Deposits, withdrawals, and transfers write append-only ledger postings alongside the business transaction.
-- Balances are derived from ledger postings rather than stored as a mutable account snapshot.
-- Login, registration, statement generation, and money-moving routes are rate-limited.
-- Withdrawals fail if the account balance is too low.
-- Transfers are atomic: debit, credit, and transaction write share one database transaction.
-- The opening balance is recorded as a transaction entry, not just a silent balance mutation.
-- Transaction detail endpoints are ownership-checked so a user cannot inspect another account's transaction row.
+- Frontend: Next.js App Router, TypeScript, Tailwind CSS
+- Backend: Node.js, Express, TypeScript, Prisma ORM
+- Database: PostgreSQL on Supabase
+- Auth: bcrypt, JWT, `httpOnly` cookie session
+- Testing: Vitest, Supertest, GitHub Actions CI
 
 ## API Surface
 
-### Operational
-
-- `GET /health`
-
-### Auth
-
+Auth:
 - `POST /register`
 - `POST /login`
 - `POST /logout`
 - `GET /session`
 
-### Account Reads
-
+Account reads:
 - `GET /account`
 - `GET /account/transactions`
 - `GET /account/transactions/:transactionId`
 - `GET /account/statements/monthly`
 
-### Money Movement
-
+Money movement:
 - `POST /account/deposit`
 - `POST /account/withdraw`
 - `POST /account/transfer`
 
+Operational:
+- `GET /health`
+
 All financial write endpoints require an `Idempotency-Key` header.
 
-### Operational Signals
+## Local Setup
 
-- Every response includes an `X-Request-Id` header.
-- Backend requests are logged as structured JSON lines with method, path, status, duration, and request id.
-- `GET /health` performs a lightweight database ping and returns service status.
-- Sensitive routes return `429` responses with retry metadata when rate limits are exceeded.
-
-## App Routes
-
-- `/` landing page
-- `/explore-more` engineering deep dive
-- `/docs` technical documentation
-- `/login` login page
-- `/register` registration page
-- `/account` authenticated ledger dashboard
-
-## Local Development
-
-There is no root `package.json` yet. Run the frontend and backend separately.
-
-### 1. Backend setup
+Backend:
 
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file in `backend/`:
+Create `backend/.env`:
 
 ```env
 DIRECT_URL=your_postgres_connection_string
@@ -215,27 +94,22 @@ CORS_ORIGIN=http://localhost:3000
 TRUST_PROXY=1
 ```
 
-Apply migrations and optional seed data:
+Apply migrations and start the API:
 
 ```bash
 npx prisma migrate deploy
 npm run seed
-```
-
-Start the backend:
-
-```bash
 npm run dev
 ```
 
-### 2. Frontend setup
+Frontend:
 
 ```bash
 cd frontend
 npm install
 ```
 
-Create a `.env.local` file in `frontend/`:
+Create `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_AUTH_API_URL=http://localhost:4000
@@ -247,64 +121,38 @@ Start the frontend:
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+## Testing and CI
 
-### 3. Backend integration tests
-
-The backend test suite truncates the database between runs, so point it at a disposable local Postgres instance.
+Backend integration tests use a disposable Postgres database and truncate tables between runs:
 
 ```bash
 cd backend
 ALLOW_TEST_DB_RESET=true npm run test:integration
 ```
 
-### 4. CI
+GitHub Actions provisions Postgres, applies migrations, runs backend integration tests, then runs frontend lint and production build checks.
 
-GitHub Actions provisions Postgres, applies backend migrations, runs backend integration tests, then runs frontend lint and production build checks.
+## Current Tradeoffs
 
-## Repository Structure
+- The system is intentionally scoped to one personal account per user.
+- Logout clears the cookie but does not provide full token revocation.
+- Rate limiting currently uses the in-process memory store; multi-instance deployment would need a shared store such as Redis.
+- Reversals, refunds, and reconciliation workflows are not implemented yet.
 
-```text
-mo-stripe/
-  backend/
-    prisma/
-    src/
-      controllers/
-      middleware/
-      routes/
-      services/
-      validators/
-  frontend/
-    app/
-    components/
-    lib/
-```
+## Next Steps
 
-## Current Limitations
+1. Add compensating entries for reversals and refunds.
+2. Add stronger session revocation and refresh-token architecture.
+3. Move abuse protection to a distributed store or edge layer for multi-instance deployment.
+4. Deploy the frontend and backend publicly with metrics and alerting.
 
-- No refresh-token or token-revocation strategy
-- No reversal or reconciliation workflows yet
-- Rate limiting currently uses the in-process memory store, so a multi-instance deployment would need a shared store such as Redis
-- No multi-account or business-entity model yet
-- No public deployment configuration in the repo yet
+## What Employers Should Notice
 
-## Roadmap
+This project is meant to show more than framework familiarity. It shows that I can reason about:
 
-The next meaningful upgrades would be:
-
-1. compensating entries for reversals and refunds
-2. stronger session revocation and refresh-token architecture
-3. a distributed rate-limit store and edge abuse protection for multi-instance deployment
-4. more formal account/entity ownership models for business use cases
-5. public deployment plus metrics and alerting around the current health surface
-
-## Why This Matters
-
-This project is meant to show more than framework familiarity. It is meant to show that I can reason about:
-
-- where trust boundaries live
-- how to model ownership in a relational system
-- how to keep financial state coherent
-- how to scope a backend project deliberately instead of adding random features
-
-That is the part of the project I want employers to see first.
+- trust boundaries
+- relational ownership
+- safe money movement
+- auditability
+- operational hardening
+- pragmatic system scope

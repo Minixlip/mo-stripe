@@ -1,0 +1,63 @@
+<svg width="1600" height="920" viewBox="0 0 1600 920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="920" fill="#F3F1EB"/>
+  <text x="88" y="106" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">mo-stripe architecture</text>
+  <text x="88" y="156" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="28">A fintech-style learning project focused on safe money movement and clear backend boundaries.</text>
+
+  <rect x="88" y="230" width="280" height="188" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <text x="118" y="276" fill="#7A7771" font-family="Courier New, monospace" font-size="16">CLIENT</text>
+  <text x="118" y="346" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Next.js app</text>
+  <text x="118" y="390" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">App Router frontend</text>
+  <text x="118" y="424" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">REST requests with</text>
+  <text x="118" y="458" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">credentials included</text>
+
+  <rect x="492" y="230" width="300" height="188" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <text x="522" y="276" fill="#7A7771" font-family="Courier New, monospace" font-size="16">HTTP BOUNDARY</text>
+  <text x="522" y="346" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Express API</text>
+  <text x="522" y="390" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">Validation, auth, rate limits,</text>
+  <text x="522" y="424" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">request IDs, health checks,</text>
+  <text x="522" y="458" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">structured logs</text>
+
+  <rect x="916" y="230" width="300" height="188" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <text x="946" y="276" fill="#7A7771" font-family="Courier New, monospace" font-size="16">DOMAIN</text>
+  <text x="946" y="346" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Service layer</text>
+  <text x="946" y="390" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">Idempotent money writes,</text>
+  <text x="946" y="424" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">overdraft checks, posting-</text>
+  <text x="946" y="458" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">derived balances</text>
+
+  <rect x="1340" y="230" width="172" height="188" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <text x="1370" y="276" fill="#7A7771" font-family="Courier New, monospace" font-size="16">DATA</text>
+  <text x="1370" y="346" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700">Postgres</text>
+  <text x="1370" y="392" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">Prisma ORM</text>
+  <text x="1370" y="426" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="24">Supabase</text>
+
+  <path d="M368 324H492" stroke="#161616" stroke-width="4"/>
+  <path d="M792 324H916" stroke="#161616" stroke-width="4"/>
+  <path d="M1216 324H1340" stroke="#161616" stroke-width="4"/>
+  <polygon points="484,314 492,324 484,334" fill="#161616"/>
+  <polygon points="908,314 916,324 908,334" fill="#161616"/>
+  <polygon points="1332,314 1340,324 1332,334" fill="#161616"/>
+
+  <rect x="168" y="520" width="280" height="134" fill="#E7E4DC" stroke="#161616" stroke-width="2"/>
+  <text x="192" y="560" fill="#7A7771" font-family="Courier New, monospace" font-size="14">AUTH MODEL</text>
+  <text x="192" y="602" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="30">JWT in httpOnly cookie</text>
+  <text x="192" y="636" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="22">Backend resolves identity</text>
+
+  <rect x="492" y="520" width="300" height="134" fill="#E7E4DC" stroke="#161616" stroke-width="2"/>
+  <text x="516" y="560" fill="#7A7771" font-family="Courier New, monospace" font-size="14">WRITE PATH</text>
+  <text x="516" y="602" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="30">Idempotency key required</text>
+  <text x="516" y="636" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="22">Replay-safe deposits, withdraws, transfers</text>
+
+  <rect x="840" y="520" width="376" height="134" fill="#E7E4DC" stroke="#161616" stroke-width="2"/>
+  <text x="864" y="560" fill="#7A7771" font-family="Courier New, monospace" font-size="14">LEDGER MODEL</text>
+  <text x="864" y="602" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="30">Append-only postings</text>
+  <text x="864" y="636" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="22">Balances and statements derive from debit / credit rows</text>
+
+  <rect x="1244" y="520" width="268" height="134" fill="#E7E4DC" stroke="#161616" stroke-width="2"/>
+  <text x="1268" y="560" fill="#7A7771" font-family="Courier New, monospace" font-size="14">OPERATIONS</text>
+  <text x="1268" y="602" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="30">CI + tests + logs</text>
+  <text x="1268" y="636" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="22">Request IDs and health checks</text>
+
+  <rect x="88" y="734" width="1424" height="108" fill="#C8F000" stroke="#161616" stroke-width="3"/>
+  <text x="120" y="778" fill="#161616" font-family="Courier New, monospace" font-size="18">CORE REQUEST FLOW</text>
+  <text x="120" y="816" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="28">Browser -&gt; cookie-backed REST request -&gt; Express middleware -&gt; service invariants -&gt; Prisma transaction -&gt; ledger postings -&gt; derived reads</text>
+</svg>

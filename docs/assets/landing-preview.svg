@@ -1,0 +1,98 @@
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="980" fill="#F3F1EB"/>
+  <rect x="56" y="44" width="1488" height="892" rx="10" fill="#F7F5EF" stroke="#161616" stroke-width="4"/>
+  <rect x="92" y="84" width="1416" height="70" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <rect x="112" y="102" width="44" height="36" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="174" y="126" fill="#161616" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">mo-stripe</text>
+  <text x="628" y="124" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">PRODUCT</text>
+  <text x="756" y="124" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">PRICING</text>
+  <text x="884" y="124" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">DOCS</text>
+  <text x="976" y="124" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">SECURITY</text>
+  <rect x="1202" y="98" width="102" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="1230" y="124" fill="#161616" font-family="Courier New, monospace" font-size="18">SIGN IN</text>
+  <rect x="1320" y="98" width="150" height="42" fill="#C8F000" stroke="#161616" stroke-width="2"/>
+  <text x="1350" y="124" fill="#161616" font-family="Courier New, monospace" font-size="18">ACCESS LEDGER</text>
+
+  <rect x="122" y="214" width="214" height="44" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="146" y="242" fill="#7A7771" font-family="Courier New, monospace" font-size="16">ARCHITECTURAL LEDGER</text>
+
+  <text x="122" y="402" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="122" font-weight="700">The Ledger.</text>
+  <text x="124" y="480" fill="#0F0F0F" font-family="Arial, Helvetica, sans-serif" font-size="64">Your money, audited.</text>
+  <text x="122" y="560" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="34">A ledger-driven banking demo with cookie auth, idempotent writes,</text>
+  <text x="122" y="604" fill="#66635E" font-family="Arial, Helvetica, sans-serif" font-size="34">posting-derived balances, and monthly statement exports.</text>
+
+  <rect x="122" y="654" width="182" height="54" fill="#C8F000" stroke="#161616" stroke-width="2"/>
+  <text x="146" y="688" fill="#161616" font-family="Courier New, monospace" font-size="22">EXPLORE MORE</text>
+  <rect x="320" y="654" width="144" height="54" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="354" y="688" fill="#161616" font-family="Courier New, monospace" font-size="22">READ DOCS</text>
+
+  <rect x="122" y="742" width="480" height="182" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="144" y="776" fill="#7A7771" font-family="Courier New, monospace" font-size="16">BUILT WITH</text>
+  <rect x="144" y="804" width="88" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <rect x="244" y="804" width="88" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <rect x="344" y="804" width="108" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <rect x="464" y="804" width="82" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <text x="165" y="828" fill="#161616" font-family="Courier New, monospace" font-size="18">NEXT.JS</text>
+  <text x="264" y="828" fill="#161616" font-family="Courier New, monospace" font-size="18">EXPRESS</text>
+  <text x="363" y="828" fill="#161616" font-family="Courier New, monospace" font-size="18">TYPESCRIPT</text>
+  <text x="487" y="828" fill="#161616" font-family="Courier New, monospace" font-size="18">PRISMA</text>
+  <rect x="144" y="854" width="148" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <rect x="304" y="854" width="132" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <rect x="448" y="854" width="130" height="36" fill="#F3F1EB" stroke="#161616" stroke-width="2"/>
+  <text x="162" y="878" fill="#161616" font-family="Courier New, monospace" font-size="18">POSTGRESQL</text>
+  <text x="326" y="878" fill="#161616" font-family="Courier New, monospace" font-size="18">SUPABASE</text>
+  <text x="470" y="878" fill="#161616" font-family="Courier New, monospace" font-size="18">TAILWIND</text>
+
+  <rect x="690" y="212" width="748" height="676" fill="#F7F5EF" stroke="#161616" stroke-width="3"/>
+  <rect x="690" y="212" width="748" height="56" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="718" y="246" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">CASCADING FEED / RECEIPT ROLL</text>
+  <text x="1324" y="246" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">GBP   09:41</text>
+
+  <rect x="716" y="292" width="372" height="302" fill="#EFECE5" stroke="#161616" stroke-width="2"/>
+  <text x="742" y="328" fill="#7A7771" font-family="Courier New, monospace" font-size="16">TOTAL BALANCE</text>
+  <text x="740" y="434" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">124,092.50</text>
+  <line x1="740" y1="470" x2="1060" y2="470" stroke="#161616" stroke-width="2"/>
+  <text x="742" y="508" fill="#7A7771" font-family="Courier New, monospace" font-size="16">NET FLOW</text>
+  <text x="990" y="508" fill="#161616" font-family="Courier New, monospace" font-size="18">+ 3,842.30</text>
+  <text x="742" y="548" fill="#7A7771" font-family="Courier New, monospace" font-size="16">LAST SETTLED</text>
+  <text x="960" y="548" fill="#161616" font-family="Courier New, monospace" font-size="18">2026-03-12</text>
+  <rect x="742" y="620" width="150" height="48" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <rect x="904" y="620" width="150" height="48" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="782" y="650" fill="#161616" font-family="Courier New, monospace" font-size="20">DEPOSIT</text>
+  <text x="936" y="650" fill="#161616" font-family="Courier New, monospace" font-size="20">WITHDRAW</text>
+  <rect x="742" y="684" width="312" height="52" fill="#C8F000" stroke="#161616" stroke-width="2"/>
+  <text x="854" y="716" fill="#161616" font-family="Courier New, monospace" font-size="22">TRANSFER</text>
+
+  <rect x="1112" y="292" width="292" height="474" fill="#EFECE5" stroke="#161616" stroke-width="2"/>
+  <text x="1140" y="328" fill="#7A7771" font-family="Courier New, monospace" font-size="16">THE RECEIPT ROLL</text>
+  <text x="1282" y="328" fill="#7A7771" font-family="Courier New, monospace" font-size="16">LINES / MINUTE: 18</text>
+  <rect x="1138" y="356" width="240" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <rect x="1138" y="414" width="240" height="42" fill="#DDE8AD" stroke="#161616" stroke-width="2"/>
+  <rect x="1138" y="472" width="240" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <rect x="1138" y="530" width="240" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <rect x="1138" y="588" width="240" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <rect x="1138" y="646" width="240" height="42" fill="#F7F5EF" stroke="#161616" stroke-width="2"/>
+  <text x="1160" y="382" fill="#161616" font-family="Courier New, monospace" font-size="18">- 12.50</text>
+  <text x="1284" y="382" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">COFFEE</text>
+  <text x="1160" y="440" fill="#3F8F7B" font-family="Courier New, monospace" font-size="18">+ 500.00</text>
+  <text x="1242" y="440" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">DEPOSIT</text>
+  <text x="1160" y="498" fill="#161616" font-family="Courier New, monospace" font-size="18">- 80.00</text>
+  <text x="1268" y="498" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">SOFTWARE</text>
+  <text x="1160" y="556" fill="#161616" font-family="Courier New, monospace" font-size="18">- 15.99</text>
+  <text x="1228" y="556" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">SUBSCRIPTION</text>
+  <text x="1160" y="614" fill="#3F8F7B" font-family="Courier New, monospace" font-size="18">+ 2,200.00</text>
+  <text x="1262" y="614" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">PAYROLL</text>
+  <text x="1160" y="672" fill="#161616" font-family="Courier New, monospace" font-size="18">- 105.00</text>
+  <text x="1266" y="672" fill="#5F5D59" font-family="Courier New, monospace" font-size="18">UTILITIES</text>
+
+  <rect x="716" y="786" width="688" height="82" fill="#E9E6DE" stroke="#161616" stroke-width="2"/>
+  <rect x="716" y="786" width="220" height="82" fill="#D7D4CD" stroke="#161616" stroke-width="2"/>
+  <rect x="936" y="786" width="220" height="82" fill="#D7D4CD" stroke="#161616" stroke-width="2"/>
+  <rect x="1156" y="786" width="248" height="82" fill="#D7D4CD" stroke="#161616" stroke-width="2"/>
+  <text x="742" y="826" fill="#7A7771" font-family="Courier New, monospace" font-size="16">EXPORT</text>
+  <text x="742" y="854" fill="#161616" font-family="Courier New, monospace" font-size="22">CSV / JSON</text>
+  <text x="962" y="826" fill="#7A7771" font-family="Courier New, monospace" font-size="16">WEBHOOKS</text>
+  <text x="962" y="854" fill="#161616" font-family="Courier New, monospace" font-size="22">REAL-TIME</text>
+  <text x="1180" y="826" fill="#7A7771" font-family="Courier New, monospace" font-size="16">AUDIT TRAIL</text>
+  <text x="1180" y="854" fill="#161616" font-family="Courier New, monospace" font-size="22">IMMUTABLE</text>
+</svg>
