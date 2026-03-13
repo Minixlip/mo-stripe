@@ -3,6 +3,7 @@
 `mo-stripe` is a fintech-style ledger application built to demonstrate backend engineering decisions that matter in money movement systems.
 
 The project focuses on:
+
 - cookie-backed JWT authentication
 - idempotent financial writes
 - append-only ledger postings
@@ -13,11 +14,18 @@ The project focuses on:
 ## Product Preview
 
 <p>
-  <img src="docs/assets/landing-preview.svg" alt="Landing page preview" width="49%">
-  <img src="docs/assets/dashboard-preview.svg" alt="Account dashboard preview" width="49%">
+  <img src="docs/assets/landingPage1.png" alt="Landing page preview" width="49%">
+  <img src="docs/assets/landingPage2.png" alt="Landing page preview" width="49%">
 </p>
 <p>
-  <img src="docs/assets/statement-preview.svg" alt="Monthly statement export preview" width="100%">
+  <img src="docs/assets/LedgerPreview.png" alt="Account dashboard preview" width="100%">
+</p>
+<p>
+  <img src="docs/assets/TransactionPreview.png" alt="Account dashboard preview" width="49%">
+  <img src="docs/assets/TransactionDetailPreview.png" alt="Account dashboard preview" width="49%">
+</p>
+<p>
+  <img src="docs/assets/ExportLedgerPreview.png" alt="Monthly statement export preview" width="100%">
 </p>
 
 ## Architecture
@@ -53,23 +61,27 @@ The project focuses on:
 ## API Surface
 
 Auth:
+
 - `POST /register`
 - `POST /login`
 - `POST /logout`
 - `GET /session`
 
 Account reads:
+
 - `GET /account`
 - `GET /account/transactions`
 - `GET /account/transactions/:transactionId`
 - `GET /account/statements/monthly`
 
 Money movement:
+
 - `POST /account/deposit`
 - `POST /account/withdraw`
 - `POST /account/transfer`
 
 Operational:
+
 - `GET /health`
 
 All financial write endpoints require an `Idempotency-Key` header.
