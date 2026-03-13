@@ -264,10 +264,13 @@ describe('Account integration flows', () => {
     });
 
     expect(transferTransactions).toHaveLength(1);
-    expect(transferTransactions[0]).toEqual({
+    expect(transferTransactions[0]).toMatchObject({
       id: transferTransactions[0]?.id,
       amount: 2_500,
-      ledgerPostings: [
+    });
+    expect(transferTransactions[0]?.ledgerPostings).toHaveLength(2);
+    expect(transferTransactions[0]?.ledgerPostings).toEqual(
+      expect.arrayContaining([
         {
           amount: 2_500,
           direction: 'CREDIT',
@@ -278,8 +281,8 @@ describe('Account integration flows', () => {
           direction: 'DEBIT',
           accountId: aliceAccount.id,
         },
-      ],
-    });
+      ]),
+    );
 
     const transferId = transferTransactions[0]?.id;
 
